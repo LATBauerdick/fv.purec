@@ -4,13 +4,13 @@ module Data.Number
   {-- , nan --}
   {-- , isNaN --}
   {-- , infinity --}
-  , isFinite
+  {-- , isFinite --}
   ) where
 
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Global ( isFinite ) as G
+import Global ( isFinite, readFloat ) as G
 
 -- | Attempt to parse a `Number` using JavaScripts `parseFloat`. Returns
 -- | `Nothing` if the parse fails or if the result is not a finite number.
@@ -46,16 +46,16 @@ fromString = G.readFloat >>> check
               | otherwise    = Nothing
 
 -- | Not a number (NaN).
-nan ∷ Number
-nan = G.nan
+{-- nan ∷ Number --}
+{-- nan = G.nan --}
 
 -- | Test whether a `Number` is NaN.
-isNaN ∷ Number → Boolean
-isNaN = G.isNaN
+{-- isNaN ∷ Number → Boolean --}
+{-- isNaN = G.isNaN --}
 
 -- | Positive infinity.
-infinity ∷ Number
-infinity = G.infinity
+{-- infinity ∷ Number --}
+{-- infinity = G.infinity --}
 
 -- | Test whether a number is finite.
 isFinite ∷ Number → Boolean

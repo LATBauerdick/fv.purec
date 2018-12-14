@@ -1,6 +1,7 @@
 module Data.String
   ( length
   , fromCharArray
+  , toCharArray
   ) where
 
 -- | Returns the number of code points in the string. Operates in constant
@@ -19,6 +20,13 @@ module Data.String
 foreign import fromCharArrayImpl :: Array Char -> String
 fromCharArray :: Array Char -> String
 fromCharArray = fromCharArrayImpl
+
+-- | Converts the string into an array of characters.
+-- |
+-- | ```purescript
+-- | toCharArray "Hello☺\n" == ['H','e','l','l','o','☺','\n']
+-- | ```
+foreign import toCharArray :: String -> Array Char
 
 foreign import lengthImpl :: String -> Int
 length :: String -> Int

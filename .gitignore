@@ -1,13 +1,13 @@
 # Dependencies
 .psci_modules
 .psc-package
-.purec-work
 bower_components
 node_modules
 
 # Generated files
 .psci
+.purec-work
 output
-
+main.out
 
 

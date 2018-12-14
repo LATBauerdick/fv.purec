@@ -23,3 +23,13 @@ PURS_FFI_FUNC_1(Data_String_fromCharArrayImpl, xs, {
   return purs_any_string_new(out);
 });
 
+PURS_FFI_FUNC_1(Data_String_toCharArray, s, {
+  const char * ts = purs_any_get_string(s);
+  const purs_any_int_t count = strlen(ts);
+  purs_vec_t * result = (purs_vec_t *) purs_vec_new();
+  for (purs_any_int_t i = 0; i < count; i++) {
+    char c = ts[i];
+    purs_vec_push_mut(result, purs_any_char_new(c));
+  }
+  return purs_any_array_new(result);
+});

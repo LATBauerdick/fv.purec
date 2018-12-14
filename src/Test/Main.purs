@@ -16,6 +16,8 @@ import Data.Array ( length, zip, foldl )
 import Data.Foldable (sum, traverse_)
 
 import Data.Cov (testCov2)
+import Data.String ( fromCharArray, toCharArray )
+import Data.Number ( fromString ) as DN
 
 import FV.Types
   ( VHMeas, HMeas, QMeas
@@ -36,6 +38,10 @@ import Test.Input ( hSlurp, hSlurpMCtruth )
 
 main :: Effect Unit
 main = do
+  log $ show $ toCharArray "test test"
+  log $ show $ fromCharArray $ toCharArray "test test"
+  log $ show $ DN.fromString "1234.5"
+  log $ show $ DN.fromString "infinite"
   log "FVT Test Suite"
   log "--Test hSlurp"
 
