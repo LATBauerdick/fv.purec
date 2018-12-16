@@ -71,6 +71,11 @@ main = do
   log $ show 12.3456789e15
   log $ show 12.3456789e18
   log $ show 12.3456789e21
+  log $ show 3e-03
+  log $ show 3e-04
+  log $ show 3e-05
+  log $ show 31e-07
+  log $ show 3e-09
   log "FVT Test Suite"
   log "--Test hSlurp"
 

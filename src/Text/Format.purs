@@ -23,6 +23,14 @@ import Data.String (length, dropWhile, replace, Pattern(..), Replacement(..))
 {-- import Data.String.CodePoints (fromCodePointArray, codePointFromChar) --}
 import Data.String (fromCharArray, singleton)
 import Math (round, pow, abs)
+import Effect.Console ( log )
+import Effect.Unsafe (unsafePerformEffect)
+
+trace :: forall a. String -> a -> a
+trace s a = const a (unsafePerformEffect (log s))
+
+debug :: forall a. a -> String -> a
+debug = flip trace
 
 -- | Pad a string on the left up to a given maximum length. The padding
 -- | character can be specified.
@@ -154,7 +162,7 @@ instance formatNumber :: Format Number where
      isSigned = fromMaybe false rec.signed
      padChar = fromMaybe ' ' rec.padChar
      nonNegative = num >= 0.0
-     numAbsStr'' = show (abs num)
+     numAbsStr'' = show (abs num) `debug` show (abs num)
      numAbsStr' = case rec.decimalMark of
                     Nothing -> numAbsStr''
                     Just d -> replace (Pattern ".") (Replacement (singleton d)) numAbsStr''
