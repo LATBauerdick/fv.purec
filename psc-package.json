@@ -1,7 +1,7 @@
 {
     "name": "purec-example-fv",
-    "set": "master",
-    "source": "https://github.com/latbauerdick/purec-package-sets",
+    "set": "psc-0.12.1",
+    "source": "https://github.com/purescript/package-sets.git",
     "depends": [
         "enums",
         "integers",
