@@ -29,6 +29,7 @@ import Data.Maybe ( Maybe(..), fromMaybe', fromMaybe, fromJust )
 {-- import Data.String.CodeUnits ( fromCharArray ) --}
 import Data.String ( length, fromCharArray ) as S
 import Data.String.Utils ( words ) as Data.String.Utils
+import Text.Format ( format, precision, width )
 import Control.MonadZero ( guard )
 import Effect.Unsafe (unsafePerformEffect)
 
@@ -117,15 +118,15 @@ roundDec :: Number -> Number
 roundDec x = (toNumber (round ( 1000.0 * x )))/1000.0
 
 to0fix :: Number -> String
-to0fix = show --format (width 4 <> precision 0)
+to0fix = format (width 4 <> precision 0)
 to1fix :: Number -> String
-to1fix = show --format (width 6 <> precision 1)
+to1fix = format (width 6 <> precision 1)
 to2fix :: Number -> String
-to2fix = show --format (width 7 <> precision 2)
+to2fix = format (width 7 <> precision 2)
 to3fix :: Number -> String
-to3fix = show --format (width 8 <> precision 3)
+to3fix = format (width 8 <> precision 3)
 to5fix :: Number -> String
-to5fix = show --format (width 10 <> precision 5)
+to5fix = format (width 10 <> precision 5)
 
 -- | 'words' breaks a string up into a list of words, which were delimited
 -- | by white space.

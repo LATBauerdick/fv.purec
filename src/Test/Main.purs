@@ -2,7 +2,7 @@ module Test.Main where
 
 import Prelude
   (Unit, bind, discard, map, pure, show, unit
-  , ($), (*), (<<<), (<>), (=<<) )
+  , ($), (*), (<<<), (<>), (=<<), (/=) )
 import Prelude.Extended ( iflt, to1fix, uJust )
 
 import Effect ( Effect )
@@ -16,8 +16,9 @@ import Data.Array ( length, zip, foldl )
 import Data.Foldable (sum, traverse_)
 
 import Data.Cov (testCov2)
-import Data.String ( fromCharArray, toCharArray )
+import Data.String ( fromCharArray, toCharArray, singleton, replace, drop, dropWhile, Pattern(..), Replacement(..) ) as S
 import Data.Number ( fromString ) as DN
+import Text.Format ( format, precision, width )
 
 import FV.Types
   ( VHMeas, HMeas, QMeas
@@ -38,10 +39,20 @@ import Test.Input ( hSlurp, hSlurpMCtruth )
 
 main :: Effect Unit
 main = do
-  log $ show $ toCharArray "test test"
-  log $ show $ fromCharArray $ toCharArray "test test"
+  log $ show $ S.toCharArray $ "Ʈest" <> "ℌ"
+  log $ show $ S.fromCharArray $ S.toCharArray "test test"
   log $ show $ DN.fromString "1234.5"
   log $ show $ DN.fromString "infinite"
+  log $ show $ S.singleton '>' <> S.singleton '♜' <> S.singleton '<'
+  log $ show $ S.replace (S.Pattern "<=") (S.Replacement "≤") "a <= b <= c"
+  log $ show $ S.replace (S.Pattern "≤") (S.Replacement "|   <=    |") "a♜ ≤ b <= c"
+  log $ show $ S.drop 1 "a♜ ≤ b <= c"
+  log $ show $ S.drop 2 "a♜ ≤ b <= c"
+  log $ show $ S.drop 3 "a♜ ≤ b <= c"
+  log $ show $ S.dropWhile (_ /= 'c') "a♜ <= b ≤ c"
+  log $ show $ S.dropWhile (_ /= 'b') "a♜ <= b ≤ c"
+  log $ show $ S.dropWhile (_ /= 'a') "a♜ <= b ≤ c"
+  log $ show $ format (width 8 <> precision 3) 12.34567
   log "FVT Test Suite"
   log "--Test hSlurp"
 

@@ -1,14 +1,14 @@
 #include <purescript.h>
 
-PURS_FFI_FUNC_1(Data_String_lengthImpl, x, {
+PURS_FFI_FUNC_1(Data_String_length, x, {
     return purs_any_int_new(strlen( purs_any_get_string(x)));
 });
 
-PURS_FFI_FUNC_1(Data_String_fromCharArrayImpl, xs, {
+PURS_FFI_FUNC_1(Data_String_fromCharArray, xs, {
   const purs_vec_t * zs = purs_any_get_array(xs);
   const purs_any_t * tmp;
   int i;
-  int mxbytes = 16;
+  const int mxbytes = 4; // ???? I have no idea...
   char * out = (char *) malloc(mxbytes*(zs->length) + 1);
   out[0] = '\0';
   char * s = (char *) malloc(mxbytes + 1);
@@ -33,3 +33,53 @@ PURS_FFI_FUNC_1(Data_String_toCharArray, s, {
   }
   return purs_any_array_new(result);
 });
+
+PURS_FFI_FUNC_1(Data_String_singleton, c, {
+  const int mxbytes = 4; // ???? I have no idea...
+  char * s = (char *) malloc(mxbytes + 1);
+  utf8_int32_t chr = purs_any_get_char(c);
+  size_t bytes = utf8codepointsize(chr);
+  utf8catcodepoint(s, chr, bytes);
+  s[bytes + 1] = '\0';
+  return purs_any_string_new(s);
+});
+
+PURS_FFI_FUNC_2(Data_String_drop, n0, s0, { //??? does not work with unicode chars
+  size_t n = purs_any_get_int(n0);
+  if (n <= 0) return s0; //???? not sure this is ok re/ memory allocation etc?
+  const char * s = purs_any_get_string(s0);
+  size_t sl = strlen(s);
+  if (n >= sl) return purs_any_string_new("");
+  size_t srl = sl-n;
+  char * sr = (char *) malloc(srl + 1);
+  strlcpy(sr, s+n, srl+1); // strlcpy makes sure there's a null character at the end
+  const purs_any_t * out = purs_any_string_new(sr);
+  free(sr);
+  return out;
+});
+
+PURS_FFI_FUNC_3(Data_String_replace, s1, s2, s3, {
+  const char * s = purs_any_get_string(s3);
+  const char * sf = purs_any_get_string(s1);
+  const char * found = strstr(s, sf);
+  if (!found) return purs_any_string_new(s);
+  char * sh = (char *) malloc(found-s + 1);
+  strncpy(sh, s, found-s);
+  sh[found-s] = '\0';
+  const char * sr = purs_any_get_string(s2);
+  const char * st = found + strlen(sf);
+  const purs_any_t * out = purs_any_string_new(afmt("%s%s%s", sh, sr, st));
+  free(sh);
+  return out;
+});
+
+PURS_FFI_FUNC_2(Data_String_countPrefix, f, s0, { // only works with ASCII...
+ // foreign import countPrefix :: (Char -> Boolean) ->  String -> Int
+  const char * s = purs_any_get_string(s0);
+  int i = 0;
+  while ( i<strlen(s) && purs_any_is_true(purs_any_app(f, purs_any_char_new(s[i])))) {
+    i++;
+  }
+  return purs_any_int_new(i);
+});
+

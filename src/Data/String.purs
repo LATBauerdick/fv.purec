@@ -1,8 +1,17 @@
 module Data.String
-  ( length
+  (
+    module Data.String.Pattern
+  , length
+  , singleton
+  , replace
   , fromCharArray
   , toCharArray
+  , drop
+  , dropWhile
+  , countPrefix
   ) where
+
+import Data.String.Pattern (Pattern(..), Replacement(..))
 
 -- | Returns the number of code points in the string. Operates in constant
 -- | space and in time linear to the length of the string.
@@ -15,11 +24,9 @@ module Data.String
 -- | 11
 -- | ```
 -- |
-{-- fromCharArray :: Array Char -> String --}
-{-- fromCharArray s = showCharImpl $ fromMaybe 'x' $ A.head s --}
-foreign import fromCharArrayImpl :: Array Char -> String
-fromCharArray :: Array Char -> String
-fromCharArray = fromCharArrayImpl
+foreign import length :: String -> Int
+
+foreign import fromCharArray :: Array Char -> String
 
 -- | Converts the string into an array of characters.
 -- |
@@ -28,6 +35,25 @@ fromCharArray = fromCharArrayImpl
 -- | ```
 foreign import toCharArray :: String -> Array Char
 
-foreign import lengthImpl :: String -> Int
-length :: String -> Int
-length = lengthImpl --???????????Array.length <<< toCodePointArray
+-- | Returns the suffix remaining after `takeWhile`.
+dropWhile :: (Char -> Boolean) -> String -> String
+dropWhile p s = drop (countPrefix p s) s
+
+-- | Returns a string of length `1` containing the given character.
+foreign import singleton :: Char -> String
+
+-- | Replaces the first occurence of the first argument with the second argument.
+foreign import replace :: Pattern -> Replacement -> String -> String
+
+-- | Returns the string without the first `n` characters.
+foreign import drop :: Int -> String -> String
+
+-- | Returns the number of contiguous characters at the beginning
+-- | of the string for which the predicate holds.
+-- |
+-- | ```purescript
+-- | countPrefix (_ /= ' ') "Hello World" == 5 -- since length "Hello" == 5
+-- | ```
+-- |
+foreign import countPrefix :: (Char -> Boolean) -> String -> Int
+
