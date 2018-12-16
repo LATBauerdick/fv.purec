@@ -53,7 +53,7 @@ main = do
   log $ show $ S.dropWhile (_ /= 'b') "a♜ <= b ≤ c"
   log $ show $ S.dropWhile (_ /= 'a') "a♜ <= b ≤ c"
   log $ show $ format (width 8 <> precision 3) 12.34567
-  log $ show $ format (width 8 <> precision 3) -0.815999999999999999999999999
+  log $ show $ format (width 8 <> precision 3) $ -0.815999999999999999999999999
   log $ show 12.3456789123456789
   log $ show 12.3456789e-3
   log $ show 12.3456789e-6
