@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 {--   (Unit, bind, discard, map, pure, show, unit --}
 {--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
-import Prelude.Extended ( iflt, to1fix, uJust )
+import Prelude.Extended ( iflt, to1fix, to5fix,   uJust )
 
 import Effect ( Effect )
 import Effect.Console ( log, logShow )
@@ -59,8 +59,11 @@ main = do
   log $ show $ format (width 8 <> precision 3) (-0.815999999999999999999999999)
   log $ show 12.3456789123456789
   log $ show 12.3456789e-3
+  log $ show $ to5fix 12.3456789e-3
   log $ show 12.3456789e-6
+  log $ show $ to5fix 12.3456789e-6
   log $ show 12.3456789e-9
+  log $ show $ to5fix 12.3456789e-9
   log $ show 12.3456789e3
   log $ show 12.3456789e6
   log $ show 12.3456789e9

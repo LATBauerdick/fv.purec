@@ -1,5 +1,6 @@
 -- | A module to format strings and numbers in a way similar to `printf` in
 -- | C-style languages.
+-- https://github.com/sharkdp/purescript-format
 
 module Text.Format
   ( Properties()
@@ -18,15 +19,18 @@ import Control.Alt ((<|>))
 import Data.Unfoldable (replicate)
 import Data.Int as Int
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.Monoid (class Monoid)
-import Data.String (length, fromCharArray, dropWhile, singleton, replace, Pattern(..), Replacement(..))
+import Data.String (length, dropWhile, replace, Pattern(..), Replacement(..))
+{-- import Data.String.CodePoints (fromCodePointArray, codePointFromChar) --}
+import Data.String (fromCharArray, singleton)
 import Math (round, pow, abs)
 
 -- | Pad a string on the left up to a given maximum length. The padding
 -- | character can be specified.
 padLeft :: Char -> Int -> String -> String
 padLeft c len str = prefix <> str
-  where prefix = fromCharArray (replicate (len - length str) c)
+  where prefix = fromCharArray $
+          (replicate (len - length str) c)
+          {-- map codePointFromChar (replicate (len - length str) c) --}
 
 type PropertiesRecord =
   { width :: Maybe Int
@@ -154,12 +158,15 @@ instance formatNumber :: Format Number where
      numAbsStr' = case rec.decimalMark of
                     Nothing -> numAbsStr''
                     Just d -> replace (Pattern ".") (Replacement (singleton d)) numAbsStr''
+                    {-- Just d -> replace (Pattern ".") (Replacement (singleton $ codePointFromChar d)) numAbsStr'' --}
      numAbsStr = case rec.precision of
                    Nothing -> numAbsStr'
                    Just p -> numAbsStr' <> paddedZeros p
      usedDelimiter = fromMaybe '.' rec.decimalMark
+     {-- usedDelimiter = codePointFromChar $ fromMaybe '.' rec.decimalMark --}
      paddedZeros p = let d = length (dropWhile (_ /= usedDelimiter) numAbsStr') - 1
-                     in fromCharArray (replicate (p - d) '0')
+                     in fromCharArray $ (replicate (p - d) '0')
+                     {-- in fromCharArray $ map codePointFromChar (replicate (p - d) '0') --}
      numSgn = if nonNegative
                 then (if isSigned then "+" else "")
                 else "-"
