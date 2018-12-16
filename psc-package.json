@@ -1,6 +1,6 @@
 {
     "name": "purec-example-fv",
-    "set": "psc-0.12.1",
+    "set": "master",
     "source": "https://github.com/latbauerdick/purec-package-sets",
     "depends": [
         "enums",
