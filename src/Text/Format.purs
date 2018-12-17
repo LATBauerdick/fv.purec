@@ -162,7 +162,7 @@ instance formatNumber :: Format Number where
      isSigned = fromMaybe false rec.signed
      padChar = fromMaybe ' ' rec.padChar
      nonNegative = num >= 0.0
-     numAbsStr'' = show (abs num) `debug` show (abs num)
+     numAbsStr'' = show (abs num) --`debug` show (abs num)
      numAbsStr' = case rec.decimalMark of
                     Nothing -> numAbsStr''
                     Just d -> replace (Pattern ".") (Replacement (singleton d)) numAbsStr''

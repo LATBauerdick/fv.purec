@@ -82,10 +82,11 @@ PURS_FFI_FUNC_2(Data_String_countPrefix, f, s0, { // only works with ASCII...
   }
   return purs_any_int_new(i);
 });
+
 /* PURS_FFI_FUNC_1(Data_Show_showNumberImpl, x, { */
 /*   static char str[32]; */
-  /* sprintf(str, "%.10g", purs_any_get_num(x)); */
-/*   return purs_any_string_new(strchr(str, '.') ? str : strcat(str, ".0")); */
+/*   sprintf(str, "%.16g", purs_any_get_num(x)); */
+/*   return purs_any_string_new(strchr(str, '.') || strchr(str, 'e') ? str : strcat(str, ".0")); //this is not locale clean */
 /* }); */
 
 /* size_t mbstowcs(schar_t *pwcs, const char *str, size_t n) */

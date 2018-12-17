@@ -29,7 +29,7 @@ import FV.Types
 import FV.Fit ( fit )
 
 import Test.Input ( hSlurp, hSlurpMCtruth )
-{-- import Test.Random ( testRandom ) --}
+import Test.Random ( testRandom )
 {-- import Test.Cluster ( doCluster ) --}
 
 
@@ -86,7 +86,8 @@ main = do
   log "--Test FVT 1"
   -- send the list of tau tracks and a VHMeas to testFVT
   {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05129e001412.dat" --}
-  log "--Test FVT 2"
+  testFVT [0,2,3,4,5] <<< uJust <<< hSlurp $ tr05129e001412
+  {-- log "--Test FVT 2" --}
   {-- testFVT [0,1,2,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05158e004656.dat" --}
   {-- log "--Test FVT 3" --}
   {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr07849e007984.dat" --}
@@ -99,8 +100,8 @@ main = do
   traverse_ showMomentum $ helices vm
   {-- doCluster vm --}
   log "--Test Random"
-  {-- testRandom 100 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0 --}
-  {--                <<< uJust <<< hSlurp $ tr05129e001412 --}
+  testRandom 100 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0
+                 <<< uJust <<< hSlurp $ tr05129e001412
   pure unit
 
 showMomentum :: HMeas -> Effect Unit

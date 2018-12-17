@@ -6,7 +6,7 @@ module Prelude.Extended (
   , sqr, mod'
   , irem, iflt
   , prettyMatrix
-  {-- , normals, stats --}
+  , normals, stats
   , debug, trace
   , uidx, uJust
   , to1fix, to2fix, to3fix, to5fix
@@ -17,13 +17,17 @@ module Prelude.Extended (
 import Prelude
 import Effect ( Effect )
 import Effect.Console ( log )
+import Effect.Random ( random )
+import Math ( log, sqrt, pi, sin, cos ) as Math
 import Data.Int ( round, toNumber, floor )
 import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Unsafe.Coerce ( unsafeCoerce ) as Unsafe.Coerce
 import Data.Foldable ( class Foldable, foldr, sum, maximum )
 import Data.List ( List(..), (:), range, fromFoldable ) as L
-import Data.Array ( unsafeIndex, range, length, fromFoldable, replicate
+import Data.Array ( unsafeIndex, range, length, take, concat
+  , fromFoldable, replicate
   ) as A
+import Data.Unfoldable ( replicateA )
 import Data.Tuple ( Tuple(..), fst, snd )
 import Data.Maybe ( Maybe(..), fromMaybe', fromMaybe, fromJust )
 {-- import Data.String.CodeUnits ( fromCharArray ) --}
@@ -42,11 +46,6 @@ fromList = A.fromFoldable
 
 fromIntegral :: Int -> Number
 fromIntegral = toNumber
-
-error :: forall a. String -> a
-error = unsafeCrashWith
-undefined :: forall a. a
-undefined = Unsafe.Coerce.unsafeCoerce unit
 
 trace :: forall a. String -> a -> a
 trace s a = const a (unsafePerformEffect (log s))
@@ -183,3 +182,31 @@ foldr1 f xs = fromMaybe' ( \_ -> error $ "foldr1: empty structure" <> show xx) x
                          Nothing -> acc
                          Just y  -> f acc y)
 
+undefined :: forall a. a
+undefined = Unsafe.Coerce.unsafeCoerce unit
+
+error :: forall a. String -> a
+error = unsafeCrashWith
+
+-- | generate a list of n normally distributed random values
+-- | usinging the Box-Muller method and the random function
+boxMuller :: Effect (Array Number)
+boxMuller = do
+              u1 <- random
+              u2 <- random
+              let r = Math.sqrt (-2.0 * Math.log u1)
+                  t = 2.0 * Math.pi * u2
+                  b1 = r * Math.cos t
+                  b2 = r * Math.sin t
+              pure $ [ b1, b2 ]
+normals :: Int -> Effect (Array Number)
+normals n = do
+  ls <- replicateA ((n+1)/2) $ boxMuller
+  pure $ A.take n $ A.concat ls
+
+-- | Calculate mean and standard deviation
+stats :: Array Number -> Tuple Number Number
+stats xs = Tuple mean stddev where
+  n = toNumber (A.length xs)
+  mean = sum xs / n
+  stddev = Math.sqrt $ sum (map (\v -> sqr (v-mean)) xs) / n
