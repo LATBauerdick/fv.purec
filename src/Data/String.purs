@@ -1,8 +1,10 @@
 module Data.String
   (
     module Data.String.Pattern
-  , length
+  , contains
   , singleton
+  , length
+  , indexOf
   , replace
   , fromCharArray
   , toCharArray
@@ -10,6 +12,9 @@ module Data.String
   , dropWhile
   , countPrefix
   ) where
+
+import Prelude
+import Data.Maybe ( Maybe(..), isJust )
 
 import Data.String.Pattern (Pattern(..), Replacement(..))
 
@@ -25,6 +30,33 @@ import Data.String.Pattern (Pattern(..), Replacement(..))
 -- | ```
 -- |
 foreign import length :: String -> Int
+
+-- | Checks whether the pattern appears in the given string.
+-- |
+-- | ```purescript
+-- | contains (Pattern "needle") "haystack with needle" == true
+-- | contains (Pattern "needle") "haystack" == false
+-- | ```
+contains :: Pattern -> String -> Boolean
+contains pat = isJust <<< indexOf pat
+
+-- | Returns the index of the first occurrence of the pattern in the
+-- | given string. Returns `Nothing` if there is no match.
+-- |
+-- | ```purescript
+-- | indexOf (Pattern "c") "abcdc" == Just 2
+-- | indexOf (Pattern "c") "aaa" == Nothing
+-- | ```
+-- |
+indexOf :: Pattern -> String -> Maybe Int
+indexOf = _indexOf Just Nothing
+
+foreign import _indexOf
+  :: (forall a. a -> Maybe a)
+  -> (forall a. Maybe a)
+  -> Pattern
+  -> String
+  -> Maybe Int
 
 foreign import fromCharArray :: Array Char -> String
 

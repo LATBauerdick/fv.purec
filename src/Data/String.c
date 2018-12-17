@@ -83,6 +83,15 @@ PURS_FFI_FUNC_2(Data_String_countPrefix, f, s0, { // only works with ASCII...
   return purs_any_int_new(i);
 });
 
+PURS_FFI_FUNC_4(Data_String__indexOf, just, nothing, p0, s0, { // only works with ASCII...
+// foreign import _indexOf :: (forall a. a -> Maybe a) -> (forall a. Maybe a) -> Pattern -> String -> Maybe Int
+  const char * p = purs_any_get_string(p0);
+  const char * s = purs_any_get_string(s0);
+  const char * found = strstr(s, p);
+  if (!found) return nothing;
+  return purs_any_app(just, purs_any_int_new(found-s));
+});
+
 /* PURS_FFI_FUNC_1(Data_Show_showNumberImpl, x, { */
 /*   static char str[32]; */
 /*   sprintf(str, "%.16g", purs_any_get_num(x)); */

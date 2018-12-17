@@ -19,7 +19,7 @@ import Control.Alt ((<|>))
 import Data.Unfoldable (replicate)
 import Data.Int as Int
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.String (length, dropWhile, replace, Pattern(..), Replacement(..))
+import Data.String (length, dropWhile, replace, contains, Pattern(..), Replacement(..))
 {-- import Data.String.CodePoints (fromCodePointArray, codePointFromChar) --}
 import Data.String (fromCharArray, singleton)
 import Math (round, pow, abs)
@@ -163,6 +163,9 @@ instance formatNumber :: Format Number where
      padChar = fromMaybe ' ' rec.padChar
      nonNegative = num >= 0.0
      numAbsStr'' = show (abs num) --`debug` show (abs num)
+     bbbad       = if (contains (Pattern "e") numAbsStr'')
+                     then 1 `debug` numAbsStr''
+                     else 0
      numAbsStr' = case rec.decimalMark of
                     Nothing -> numAbsStr''
                     Just d -> replace (Pattern ".") (Replacement (singleton d)) numAbsStr''

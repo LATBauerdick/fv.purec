@@ -10,6 +10,7 @@ PURS_FFI_EXPORT(Data_String_countPrefix);
 PURS_FFI_EXPORT(Data_String_drop);
 PURS_FFI_EXPORT(Data_String_singleton);
 PURS_FFI_EXPORT(Data_String_replace);
+PURS_FFI_EXPORT(Data_String__indexOf);
 
 #endif // Data_String_H
 

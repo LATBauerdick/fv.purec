@@ -16,7 +16,7 @@ import Data.Array ( length, zip, foldl )
 import Data.Foldable (sum, traverse_)
 
 import Data.Cov (testCov2)
-import Data.String ( fromCharArray, toCharArray, singleton, replace, drop, dropWhile, Pattern(..), Replacement(..) ) as S
+import Data.String ( fromCharArray, toCharArray, singleton, replace, drop, dropWhile, contains, Pattern(..), Replacement(..) ) as S
 import Data.Number ( fromString ) as DN
 import Text.Format ( format, precision, width )
 
@@ -76,6 +76,7 @@ main = do
   log $ show 3e-05
   log $ show 31e-07
   log $ show 3e-09
+  log $ show $ S.contains (S.Pattern "e") (show 3e-5)
   log "FVT Test Suite"
   log "--Test hSlurp"
 
