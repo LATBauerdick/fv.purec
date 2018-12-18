@@ -1,0 +1,15 @@
+{
+    "name": "purec-example-fv",
+    "set": "master",
+    "source": "https://github.com/latbauerdick/purec-package-sets",
+    "depends": [
+        "enums",
+        "integers",
+        "math",
+        "arrays",
+        "lists",
+        "console",
+        "effect",
+        "prelude"
+    ]
+}

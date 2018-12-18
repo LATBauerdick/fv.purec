@@ -1,0 +1,16 @@
+{
+    "name": "purec-example-fv",
+    "set": "psc-0.12.1",
+    "source": "https://github.com/purescript/package-sets.git",
+    "depends": [
+        "numbers",
+        "enums",
+        "integers",
+        "math",
+        "arrays",
+        "lists",
+        "console",
+        "effect",
+        "prelude"
+    ]
+}
