@@ -8,6 +8,17 @@ exports.length = function (s) {
   return s.length;
 };
 
+exports._indexOf = function (just) {
+  return function (nothing) {
+    return function (x) {
+      return function (s) {
+        var i = s.indexOf(x);
+        return i === -1 ? nothing : just(i);
+      };
+    };
+  };
+};
+
 exports.toCharArray = function (s) {
   return s.split("");
 };
