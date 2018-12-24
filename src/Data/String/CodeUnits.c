@@ -1,10 +1,10 @@
 #include <purescript.h>
 
-PURS_FFI_FUNC_1(Data_String_length, x, {
+PURS_FFI_FUNC_1(Data_String_CodeUnits_length, x, {
     return purs_any_int_new(strlen( purs_any_get_string(x)));
 });
 
-PURS_FFI_FUNC_1(Data_String_fromCharArray, xs, {
+PURS_FFI_FUNC_1(Data_String_CodeUnits_fromCharArray, xs, {
   const purs_vec_t * zs = purs_any_get_array(xs);
   const purs_any_t * tmp;
   int i;
@@ -23,7 +23,7 @@ PURS_FFI_FUNC_1(Data_String_fromCharArray, xs, {
   return purs_any_string_new(out);
 });
 
-PURS_FFI_FUNC_1(Data_String_toCharArray, s, {
+PURS_FFI_FUNC_1(Data_String_CodeUnits_toCharArray, s, {
   const char * ts = purs_any_get_string(s);
   const purs_any_int_t count = strlen(ts);
   purs_vec_t * result = (purs_vec_t *) purs_vec_new();
@@ -34,7 +34,7 @@ PURS_FFI_FUNC_1(Data_String_toCharArray, s, {
   return purs_any_array_new(result);
 });
 
-PURS_FFI_FUNC_1(Data_String_singleton, c, {
+PURS_FFI_FUNC_1(Data_String_CodeUnits_singleton, c, {
   const int mxbytes = 4; // ???? I have no idea...
   char * s = (char *) malloc(mxbytes + 1);
   utf8_int32_t chr = purs_any_get_char(c);
@@ -44,7 +44,7 @@ PURS_FFI_FUNC_1(Data_String_singleton, c, {
   return purs_any_string_new(s);
 });
 
-PURS_FFI_FUNC_2(Data_String_drop, n0, s0, { //??? does not work with unicode chars
+PURS_FFI_FUNC_2(Data_String_CodeUnits_drop, n0, s0, { //??? does not work with unicode chars
   size_t n = purs_any_get_int(n0);
   if (n <= 0) return s0; //???? not sure this is ok re/ memory allocation etc?
   const char * s = purs_any_get_string(s0);
@@ -58,22 +58,7 @@ PURS_FFI_FUNC_2(Data_String_drop, n0, s0, { //??? does not work with unicode cha
   return out;
 });
 
-PURS_FFI_FUNC_3(Data_String_replace, s1, s2, s3, {
-  const char * s = purs_any_get_string(s3);
-  const char * sf = purs_any_get_string(s1);
-  const char * found = strstr(s, sf);
-  if (!found) return purs_any_string_new(s);
-  char * sh = (char *) malloc(found-s + 1);
-  strncpy(sh, s, found-s);
-  sh[found-s] = '\0';
-  const char * sr = purs_any_get_string(s2);
-  const char * st = found + strlen(sf);
-  const purs_any_t * out = purs_any_string_new(afmt("%s%s%s", sh, sr, st));
-  free(sh);
-  return out;
-});
-
-PURS_FFI_FUNC_2(Data_String_countPrefix, f, s0, { // only works with ASCII...
+PURS_FFI_FUNC_2(Data_String_CodeUnits_countPrefix, f, s0, { // only works with ASCII...
  // foreign import countPrefix :: (Char -> Boolean) ->  String -> Int
   const char * s = purs_any_get_string(s0);
   int i = 0;
@@ -83,7 +68,7 @@ PURS_FFI_FUNC_2(Data_String_countPrefix, f, s0, { // only works with ASCII...
   return purs_any_int_new(i);
 });
 
-PURS_FFI_FUNC_4(Data_String__indexOf, just, nothing, p0, s0, { // only works with ASCII...
+PURS_FFI_FUNC_4(Data_String_CodeUnits__indexOf, just, nothing, p0, s0, { // only works with ASCII...
 // foreign import _indexOf :: (forall a. a -> Maybe a) -> (forall a. Maybe a) -> Pattern -> String -> Maybe Int
   const char * p = purs_any_get_string(p0);
   const char * s = purs_any_get_string(s0);
