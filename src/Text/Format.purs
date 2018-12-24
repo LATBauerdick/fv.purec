@@ -140,8 +140,8 @@ instance formatInt :: Format Int where
 
 instance formatNumber :: Format Number where
   -- Format as an integer if the precision is set to 0
-  format prop@(Properties rec) num | rec.precision == Just 0 =
-    format prop (Int.round num)
+  format prop@(Properties rec) num' | rec.precision == Just 0 = --LATB changed num to num' to avoid purescript-native problem
+    format prop (Int.round num')
 
   format (Properties rec) num' =
     case rec.width of
