@@ -2,19 +2,45 @@ module Data.String.CodeUnits
   (
     contains
   , singleton
+  , indexOf
+  , countPrefix
+  , drop
+  , dropWhile
   , fromCharArray
   , toCharArray
   , length
-  , countPrefix
-  , indexOf
-  , drop
-  , dropWhile
   ) where
 
 import Prelude
 
-import Data.Maybe (Maybe(..), isJust)
 import Data.String.Pattern (Pattern(..))
+import Data.Maybe (Maybe(..), isJust)
+
+-- | Returns a string of length `1` containing the given character.
+-- |
+-- | ```purescript
+-- | singleton 'l' == "l"
+-- | ```
+-- |
+foreign import singleton :: Char -> String
+
+-- | Returns the index of the first occurrence of the pattern in the
+-- | given string. Returns `Nothing` if there is no match.
+-- |
+-- | ```purescript
+-- | indexOf (Pattern "c") "abcdc" == Just 2
+-- | indexOf (Pattern "c") "aaa" == Nothing
+-- | ```
+-- |
+indexOf :: Pattern -> String -> Maybe Int
+indexOf = _indexOf Just Nothing
+
+foreign import _indexOf
+  :: (forall a. a -> Maybe a)
+  -> (forall a. Maybe a)
+  -> Pattern
+  -> String
+  -> Maybe Int
 
 -- | Checks whether the pattern appears in the given string.
 -- |
@@ -24,9 +50,6 @@ import Data.String.Pattern (Pattern(..))
 -- | ```
 contains :: Pattern -> String -> Boolean
 contains pat = isJust <<< indexOf pat
-
--- | Returns a string of length `1` containing the given character.
-foreign import singleton :: Char -> String
 
 foreign import fromCharArray :: Array Char -> String
 
@@ -58,23 +81,6 @@ foreign import length :: String -> Int
 -- | ```
 -- |
 foreign import countPrefix :: (Char -> Boolean) -> String -> Int
-
--- | Returns the index of the first occurrence of the pattern in the
--- | given string. Returns `Nothing` if there is no match.
--- |
--- | ```purescript
--- | indexOf (Pattern "c") "abcdc" == Just 2
--- | indexOf (Pattern "c") "aaa" == Nothing
--- | ```
--- |
-indexOf :: Pattern -> String -> Maybe Int
-indexOf = _indexOf Just Nothing
-foreign import _indexOf
-  :: (forall a. a -> Maybe a)
-  -> (forall a. Maybe a)
-  -> Pattern
-  -> String
-  -> Maybe Int
 
 -- | Returns the string without the first `n` characters.
 foreign import drop :: Int -> String -> String
