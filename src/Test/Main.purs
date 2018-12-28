@@ -18,7 +18,8 @@ import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
 
 import Data.Cov (testCov2, Cov(..))
-import Data.String ( fromCharArray, toCharArray, singleton, replace, drop, dropWhile, contains, Pattern(..), Replacement(..) ) as S
+import Data.String ( replace, drop, contains, Pattern(..), Replacement(..) ) as S
+import Data.String.CodeUnits ( singleton, dropWhile, fromCharArray, toCharArray )
 import Data.Number ( fromString ) as DN
 import Text.Format ( format, precision, width )
 
@@ -41,20 +42,20 @@ import Test.Random ( testRandom )
 
 main :: Effect Unit
 main = do
-  log $ show $ S.toCharArray $ "Ʈest" <> "ℌ"
-  log $ show $ S.fromCharArray $ S.toCharArray "test test"
+  log $ show $ toCharArray $ "Ʈest" <> "ℌ"
+  log $ show $ fromCharArray $ toCharArray "test test"
   log $ show $ DN.fromString "1234.5"
   log $ show $ DN.fromString "infinite"
-  log $ show $ S.singleton '>' <> S.singleton '♜' <> S.singleton '<'
+  log $ show $ singleton '>' <> singleton '♜' <> singleton '<'
   log $ show $ S.replace (S.Pattern "<=") (S.Replacement "≤") "a <= b <= c"
   log $ show $ S.replace (S.Pattern "≤") (S.Replacement "|   <=    |") "a♜ ≤ b <= c"
   log $ show $ S.drop 0 "a♜ ≤ b <= c"
   log $ show $ S.drop 1 "a♜ ≤ b <= c"
   log $ show $ S.drop 2 "a♜ ≤ b <= c"
   log $ show $ S.drop 3 "a♜ ≤ b <= c"
-  log $ show $ S.dropWhile (_ /= 'c') "a♜ <= b ≤ c"
-  log $ show $ S.dropWhile (_ /= 'b') "a♜ <= b ≤ c"
-  log $ show $ S.dropWhile (_ /= 'a') "a♜ <= b ≤ c"
+  log $ show $ dropWhile (_ /= 'c') "a♜ <= b ≤ c"
+  log $ show $ dropWhile (_ /= 'b') "a♜ <= b ≤ c"
+  log $ show $ dropWhile (_ /= 'a') "a♜ <= b ≤ c"
   {-- log $ show $ format (width 8 <> precision 3) 12.34567 --}
   {-- log $ show $ format (width 8 <> precision 3) (-0.815) --}
   log $ show (-0.815)
