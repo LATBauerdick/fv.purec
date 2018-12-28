@@ -30,8 +30,8 @@ import Data.Array ( unsafeIndex, range, length, take, concat
 import Data.Unfoldable ( replicateA )
 import Data.Tuple ( Tuple(..), fst, snd )
 import Data.Maybe ( Maybe(..), fromMaybe', fromMaybe, fromJust )
-{-- import Data.String.CodeUnits ( fromCharArray ) --}
-import Data.String ( length, fromCharArray ) as S
+import Data.String.CodeUnits ( fromCharArray )
+import Data.String ( length ) as S
 import Data.String.Utils ( words ) as Data.String.Utils
 import Text.Format ( format, precision, width )
 import Control.MonadZero ( guard )
@@ -96,7 +96,7 @@ prettyMatrix r c v = unlines ls where
     pure $ "( " <> unwords ws <> " )"
   mx = fromMaybe 0 (maximum $ map (S.length <<< to3fix) v)
   fillBlanks k str =
-    (S.fromCharArray $ A.replicate (k - S.length str) ' ') <> str
+    (fromCharArray $ A.replicate (k - S.length str) ' ') <> str
 
 -- | filter list of objects given list of indices in [a]
 -- | return list with only those b that have  indices that  are in rng [a]
