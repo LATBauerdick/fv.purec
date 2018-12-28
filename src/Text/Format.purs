@@ -1,6 +1,5 @@
 -- | A module to format strings and numbers in a way similar to `printf` in
 -- | C-style languages.
--- https://github.com/sharkdp/purescript-format
 
 module Text.Format
   ( Properties()
@@ -19,26 +18,16 @@ import Control.Alt ((<|>))
 import Data.Unfoldable (replicate)
 import Data.Int as Int
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.String (length, dropWhile, replace, contains, Pattern(..), Replacement(..))
-{-- import Data.String.CodePoints (fromCodePointArray, codePointFromChar) --}
-import Data.String (fromCharArray, singleton)
+import Data.String (length, dropWhile, replace, Pattern(..), Replacement(..))
+import Data.String.CodePoints (singleton, fromCodePointArray, codePointFromChar)
 import Math (round, pow, abs)
-import Effect.Console ( log )
-import Effect.Unsafe (unsafePerformEffect)
-
-trace :: forall a. String -> a -> a
-trace s a = const a (unsafePerformEffect (log s))
-
-debug :: forall a. a -> String -> a
-debug = flip trace
 
 -- | Pad a string on the left up to a given maximum length. The padding
 -- | character can be specified.
 padLeft :: Char -> Int -> String -> String
 padLeft c len str = prefix <> str
-  where prefix = fromCharArray $
-          (replicate (len - length str) c)
-          {-- map codePointFromChar (replicate (len - length str) c) --}
+  where prefix = fromCodePointArray $
+          map codePointFromChar (replicate (len - length str) c)
 
 type PropertiesRecord =
   { width :: Maybe Int
@@ -140,8 +129,8 @@ instance formatInt :: Format Int where
 
 instance formatNumber :: Format Number where
   -- Format as an integer if the precision is set to 0
-  format prop@(Properties rec) num' | rec.precision == Just 0 = --LATB changed num to num' to avoid purescript-native problem
-    format prop (Int.round num')
+  format prop@(Properties rec) num | rec.precision == Just 0 =
+    format prop (Int.round num)
 
   format (Properties rec) num' =
     case rec.width of
@@ -162,22 +151,16 @@ instance formatNumber :: Format Number where
      isSigned = fromMaybe false rec.signed
      padChar = fromMaybe ' ' rec.padChar
      nonNegative = num >= 0.0
-     numAbsStr''' = show (abs num) --`debug` show (abs num)
-     numAbsStr''  = if (contains (Pattern "e") numAbsStr''') && not (contains (Pattern ".") numAbsStr''')
-                     then replace (Pattern "e") (Replacement ".0e") $ numAbsStr''' --`debug` numAbsStr'''
-                     else numAbsStr'''
+     numAbsStr'' = show (abs num)
      numAbsStr' = case rec.decimalMark of
                     Nothing -> numAbsStr''
-                    Just d -> replace (Pattern ".") (Replacement (singleton d)) numAbsStr''
-                    {-- Just d -> replace (Pattern ".") (Replacement (singleton $ codePointFromChar d)) numAbsStr'' --}
+                    Just d -> replace (Pattern ".") (Replacement (singleton $ codePointFromChar d)) numAbsStr''
      numAbsStr = case rec.precision of
                    Nothing -> numAbsStr'
                    Just p -> numAbsStr' <> paddedZeros p
-     usedDelimiter = fromMaybe '.' rec.decimalMark
-     {-- usedDelimiter = codePointFromChar $ fromMaybe '.' rec.decimalMark --}
+     usedDelimiter = codePointFromChar $ fromMaybe '.' rec.decimalMark
      paddedZeros p = let d = length (dropWhile (_ /= usedDelimiter) numAbsStr') - 1
-                     in fromCharArray $ (replicate (p - d) '0')
-                     {-- in fromCharArray $ map codePointFromChar (replicate (p - d) '0') --}
+                     in fromCodePointArray $ map codePointFromChar (replicate (p - d) '0')
      numSgn = if nonNegative
                 then (if isSigned then "+" else "")
                 else "-"
