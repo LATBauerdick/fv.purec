@@ -5,7 +5,7 @@ import Prelude (not, (<<<), map, (==), ($), (<>), (<=), (>=), (||), (&&))
 import Data.Array as Array
 import Data.Foldable (foldl)
 import Data.Maybe (Maybe(..))
-import Data.String as String
+import Data.String.CodeUnits (fromCharArray, toCharArray)
 import Data.Char ( toCharCode )
 
 -- | `words` breaks a string up into a list of words, which were delimited
@@ -24,7 +24,7 @@ import Data.Char ( toCharCode )
 -- | ["foo", "bar"]
 -- | ```
 words :: String -> Array String
-words = map String.fromCharArray <<< go <<< String.toCharArray
+words = map fromCharArray <<< go <<< toCharArray
   where
     go :: Array Char -> Array (Array Char)
     go s =
