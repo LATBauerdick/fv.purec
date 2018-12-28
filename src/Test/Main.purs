@@ -12,10 +12,12 @@ import Effect.Console ( log, logShow )
 
 import Data.Monoid ( mempty )
 import Data.Tuple ( Tuple(..) )
-import Data.Array ( length, zip, foldl )
+import Data.Array ( length, zip, foldl, fromFoldable, replicate )
+import Data.List ( List(..) )
+import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
 
-import Data.Cov (testCov2)
+import Data.Cov (testCov2, Cov(..))
 import Data.String ( fromCharArray, toCharArray, singleton, replace, drop, dropWhile, contains, Pattern(..), Replacement(..) ) as S
 import Data.Number ( fromString ) as DN
 import Text.Format ( format, precision, width )
@@ -46,17 +48,18 @@ main = do
   log $ show $ S.singleton '>' <> S.singleton '♜' <> S.singleton '<'
   log $ show $ S.replace (S.Pattern "<=") (S.Replacement "≤") "a <= b <= c"
   log $ show $ S.replace (S.Pattern "≤") (S.Replacement "|   <=    |") "a♜ ≤ b <= c"
+  log $ show $ S.drop 0 "a♜ ≤ b <= c"
   log $ show $ S.drop 1 "a♜ ≤ b <= c"
   log $ show $ S.drop 2 "a♜ ≤ b <= c"
   log $ show $ S.drop 3 "a♜ ≤ b <= c"
   log $ show $ S.dropWhile (_ /= 'c') "a♜ <= b ≤ c"
   log $ show $ S.dropWhile (_ /= 'b') "a♜ <= b ≤ c"
   log $ show $ S.dropWhile (_ /= 'a') "a♜ <= b ≤ c"
-  log $ show $ format (width 8 <> precision 3) 12.34567
-  log $ show $ format (width 8 <> precision 3) (-0.815)
+  {-- log $ show $ format (width 8 <> precision 3) 12.34567 --}
+  {-- log $ show $ format (width 8 <> precision 3) (-0.815) --}
   log $ show (-0.815)
   log $ show (-0.072)
-  log $ show $ format (width 8 <> precision 3) (-0.815999999999999999999999999)
+  {-- log $ show $ format (width 8 <> precision 3) (-0.815999999999999999999999999) --}
   log $ show 12.3456789123456789
   log $ show 12.3456789e-3
   log $ show $ to5fix 12.3456789e-3
@@ -77,17 +80,24 @@ main = do
   log $ show 31e-07
   log $ show 3e-09
   log $ show $ S.contains (S.Pattern "e") (show 3e-5)
+  log $ show $ fromFoldable (Just 1)
+  log $ show $ fromFoldable [1,2,3,4,5]
+  log $ show $ fromFoldable [Just 1, Just 2, Just 3, Nothing, Just 5]
+  log $ show $ fromFoldable (Just (Cons 1 (Cons 2 (Cons 3 Nil))))
+  {-- log $ show $ replicate 2 "Hi" --}
+  {-- log $ show $ Cov {v: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]} --}
+  {-- log $ show $ replicate 2 "Hi" --}
   log "FVT Test Suite"
   log "--Test hSlurp"
 
   log "Test hSlurp dat/tr05129e001412.dat"
   {-- testHSlurp =<< readData "dat/tr05129e001412.dat" --}
   log "--Test Cov"
-  log $ testCov2
+  {-- log $ testCov2 --}
   log "--Test FVT 1"
   -- send the list of tau tracks and a VHMeas to testFVT
   {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05129e001412.dat" --}
-  testFVT [0,2,3,4,5] <<< uJust <<< hSlurp $ tr05129e001412
+  {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp $ tr05129e001412 --}
   {-- log "--Test FVT 2" --}
   {-- testFVT [0,1,2,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05158e004656.dat" --}
   {-- log "--Test FVT 3" --}
@@ -95,14 +105,14 @@ main = do
   log "--Test Cluster"
   {-- ds <- readData "dat/tr05129e001412.dat" --}
   --ds <- readData "dat/tav-0.dat"
-  let ds = tr05129e001412
-  let vm = uJust $ hSlurp ds
-  traverse_ showHelix $ helices vm
-  traverse_ showMomentum $ helices vm
+  {-- let ds = tr05129e001412 --}
+  {-- let vm = uJust $ hSlurp ds --}
+  {-- traverse_ showHelix $ helices vm --}
+  {-- traverse_ showMomentum $ helices vm --}
   {-- doCluster vm --}
   log "--Test Random"
-  testRandom 100 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0
-                 <<< uJust <<< hSlurp $ tr05129e001412
+  {-- testRandom 100 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0 --}
+                 {-- <<< uJust <<< hSlurp $ tr05129e001412 --}
   pure unit
 
 showMomentum :: HMeas -> Effect Unit
