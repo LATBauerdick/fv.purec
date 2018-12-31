@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 {--   (Unit, bind, discard, map, pure, show, unit --}
 {--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
-import Prelude.Extended ( iflt, to1fix, to5fix,   uJust )
+import Prelude.Extended ( iflt, to1fix, to5fix,   uJust, debug )
 
 import Effect ( Effect )
 import Effect.Console ( log, logShow )
@@ -92,7 +92,7 @@ main = do
       xc3 = Cov {v: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]}
       v3 :: Vec3
       v3 = fromArray [10.0,11.0,12.0]
-  log $ show xc3
+  log $ show xc3 `debug` "********************" --show v3
   log $ "Vec *. Vec = " <> show (v3 *. v3)
   let c3a = (fromArray[1.0,2.0,3.0,4.0,5.0,6.0])::Cov3
       c3b = (fromArray [0.0,0.0,1.0,1.0,0.0,0.0])::Cov3
@@ -101,8 +101,8 @@ main = do
       c3c = inv (one::Cov3)
   log $ "Jac = Cov * Cov = " <> show j3
   log $ "inv Cov = " <> show c3c
-  let j = j3 *. c3c
-  log $ "Jac * Cov = " <> show j
+  {-- let j = j3 *. c3c --}
+  {-- log $ "Jac * Cov = " <> show j --}
   log "FVT Test Suite"
   log "--Test hSlurp"
 
