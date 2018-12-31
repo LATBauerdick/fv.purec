@@ -96,9 +96,13 @@ main = do
   log $ "Vec *. Vec = " <> show (v3 *. v3)
   let c3a = (fromArray[1.0,2.0,3.0,4.0,5.0,6.0])::Cov3
       c3b = (fromArray [0.0,0.0,1.0,1.0,0.0,0.0])::Cov3
+  log $ "Cov *. Cov = " <> show (c3a *. c3b)
+  let j3 = c3a *. c3b
       c3c = inv (one::Cov3)
-  log $ "Cov *. Cov = " <> show (c3a *. c3b *. c3c)
+  log $ "Jac = Cov * Cov = " <> show j3
   log $ "inv Cov = " <> show c3c
+  let j = j3 *. c3c
+  log $ "Jac * Cov = " <> show c3c
   log "FVT Test Suite"
   log "--Test hSlurp"
 
