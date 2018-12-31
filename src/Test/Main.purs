@@ -12,12 +12,12 @@ import Effect.Console ( log, logShow )
 
 import Data.Monoid ( mempty )
 import Data.Tuple ( Tuple(..) )
-import Data.Array ( length, zip, foldl, fromFoldable, replicate )
+import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith )
 import Data.List ( List(..) )
 import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
 
-import Data.Cov (testCov2, Cov(..))
+import Data.Cov (testCov2, Cov(..), Dim3, Vec3, fromArray, (*.), Cov3, inv)
 import Data.String ( replace, drop, contains, Pattern(..), Replacement(..) ) as S
 import Data.String.CodeUnits ( singleton, dropWhile, fromCharArray, toCharArray )
 import Data.Number ( fromString ) as DN
@@ -85,9 +85,20 @@ main = do
   log $ show $ fromFoldable [1,2,3,4,5]
   log $ show $ fromFoldable [Just 1, Just 2, Just 3, Nothing, Just 5]
   log $ show $ fromFoldable (Just (Cons 1 (Cons 2 (Cons 3 Nil))))
-  {-- log $ show $ replicate 2 "Hi" --}
-  {-- log $ show $ Cov {v: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]} --}
-  {-- log $ show $ replicate 2 "Hi" --}
+  log $ show $ replicate 2 "Hi"
+  log $ show $ zipWith (*) [1, 2, 3] [4, 5, 6, 7]
+  let
+      xc3 :: Cov Dim3
+      xc3 = Cov {v: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]}
+      v3 :: Vec3
+      v3 = fromArray [10.0,11.0,12.0]
+  log $ show xc3
+  log $ "Vec *. Vec = " <> show (v3 *. v3)
+  let c3a = (fromArray[1.0,2.0,3.0,4.0,5.0,6.0])::Cov3
+      c3b = (fromArray [0.0,0.0,1.0,1.0,0.0,0.0])::Cov3
+      c3c = inv (one::Cov3)
+  log $ "Cov *. Cov = " <> show (c3a *. c3b)-- *. inv (one::Cov3))
+  log $ "inv Cov = " <> show c3c
   log "FVT Test Suite"
   log "--Test hSlurp"
 
