@@ -102,7 +102,7 @@ main = do
   log $ "Jac = Cov * Cov = " <> show j3
   log $ "inv Cov = " <> show c3c
   let j = j3 *. c3c
-  log $ "Jac * Cov = " <> show c3c
+  log $ "Jac * Cov = " <> show j
   log "FVT Test Suite"
   log "--Test hSlurp"
 
