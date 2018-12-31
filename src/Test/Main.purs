@@ -97,7 +97,7 @@ main = do
   let c3a = (fromArray[1.0,2.0,3.0,4.0,5.0,6.0])::Cov3
       c3b = (fromArray [0.0,0.0,1.0,1.0,0.0,0.0])::Cov3
       c3c = inv (one::Cov3)
-  log $ "Cov *. Cov = " <> show (c3a *. c3b)-- *. inv (one::Cov3))
+  log $ "Cov *. Cov = " <> show (c3a *. c3b *. c3c)
   log $ "inv Cov = " <> show c3c
   log "FVT Test Suite"
   log "--Test hSlurp"
