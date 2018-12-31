@@ -5,19 +5,24 @@ import Prelude
 {--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
 import Prelude.Extended ( iflt, to1fix, to5fix,   uJust, debug )
 
-import Effect ( Effect )
+import Effect
+import Effect.Unsafe (unsafePerformEffect)
 import Effect.Console ( log, logShow )
 {-- import Node.FS.Sync ( readTextFile ) --}
 {-- import Node.Encoding ( Encoding(..) ) --}
-
+import Control.Monad.ST ( ST )
+import Control.Monad.ST ( run, for ) as ST
+import Data.Array.ST ( STArray )
+import Data.Array.ST ( peek, poke, unsafeFreeze, thaw ) as STA
+import Data.Int (toNumber)
 import Data.Monoid ( mempty )
 import Data.Tuple ( Tuple(..) )
 import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith )
-import Data.List ( List(..) )
+import Data.List ( List(..), range ) as L
 import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
 
-import Data.Cov (testCov2, Cov(..), Dim3, Vec3, fromArray, (*.), Cov3, inv)
+import Data.Cov (testCov2, Cov(..), Jac(..), Dim3, Vec3, Jac33, Cov3, fromArray, (*.), inv)
 import Data.String ( replace, drop, contains, Pattern(..), Replacement(..) ) as S
 import Data.String.CodeUnits ( singleton, dropWhile, fromCharArray, toCharArray )
 import Data.Number ( fromString ) as DN
@@ -84,7 +89,11 @@ main = do
   log $ show $ fromFoldable (Just 1)
   log $ show $ fromFoldable [1,2,3,4,5]
   log $ show $ fromFoldable [Just 1, Just 2, Just 3, Nothing, Just 5]
-  log $ show $ fromFoldable (Just (Cons 1 (Cons 2 (Cons 3 Nil))))
+  let lll :: L.List Int
+      lll = L.range 1 5
+  log $ show $ lll
+  log $ show $ fromFoldable lll
+  log $ show $ fromFoldable (Just lll)
   log $ show $ replicate 2 "Hi"
   log $ show $ zipWith (*) [1, 2, 3] [4, 5, 6, 7]
   let
@@ -92,24 +101,40 @@ main = do
       xc3 = Cov {v: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]}
       v3 :: Vec3
       v3 = fromArray [10.0,11.0,12.0]
-  log $ show xc3 `debug` "********************" --show v3
+  log $ show xc3 `debug` show v3
   log $ "Vec *. Vec = " <> show (v3 *. v3)
   let c3a = (fromArray[1.0,2.0,3.0,4.0,5.0,6.0])::Cov3
       c3b = (fromArray [0.0,0.0,1.0,1.0,0.0,0.0])::Cov3
   log $ "Cov *. Cov = " <> show (c3a *. c3b)
-  let j3 = c3a *. c3b
+  let j3 :: Jac33
+      j3 = c3a *. c3b
       c3c = inv (one::Cov3)
   log $ "Jac = Cov * Cov = " <> show j3
   log $ "inv Cov = " <> show c3c
-  {-- let j = j3 *. c3c --}
-  {-- log $ "Jac * Cov = " <> show j --}
+  let j33 = Jac {v: [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0], nr: 3} :: Jac33
+  log $ "Jac = Cov * Cov = " <> show j33
+  let j = j3 *. c3c
+  log $ "Jac * Cov = " <> show j
+  {-- ST.run (ST.for 0 5 (\i0 -> do (log $ "for " <> show i0))) --}
+  let
+      run :: forall a. (forall r. ST r (STArray r a)) -> Array a
+      run act = ST.run (act >>= STA.unsafeFreeze)
+  let l= run (do
+        arr <- STA.thaw (replicate (5) 99.0)
+        ST.for 0 5 \i -> do
+          _ <- STA.poke (i) (toNumber i) arr
+          mai <- STA.peek i arr
+          let works = mai == (Just (toNumber i)) `debug` ("xxxxxxxxxx" <> show mai)
+          pure unit
+        pure arr)
+  log $ show l
   log "FVT Test Suite"
   log "--Test hSlurp"
 
   log "Test hSlurp dat/tr05129e001412.dat"
   {-- testHSlurp =<< readData "dat/tr05129e001412.dat" --}
   log "--Test Cov"
-  {-- log $ testCov2 --}
+  log $ testCov2
   log "--Test FVT 1"
   -- send the list of tau tracks and a VHMeas to testFVT
   {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05129e001412.dat" --}
