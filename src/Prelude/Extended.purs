@@ -88,7 +88,6 @@ prettyMatrix r c v = unlines ls where
   unsafeGet i j vv = unsafePartial $ A.unsafeIndex vv $ encode c i j
   encode :: Int -> Int -> Int -> Int
   encode m i j = (i-1)*m + j - 1
---  ls = L.Cons "neuneuneu" L.Nil
   ls = do
     i <- range 1 r
     let ws :: List String
