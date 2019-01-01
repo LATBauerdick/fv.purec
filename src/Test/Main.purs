@@ -17,7 +17,7 @@ import Data.Array.ST ( peek, poke, unsafeFreeze, thaw ) as STA
 import Data.Int (toNumber)
 import Data.Monoid ( mempty )
 import Data.Tuple ( Tuple(..) )
-import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith )
+import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith, uncons, index )
 import Data.List ( List(..), range ) as L
 import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
@@ -128,13 +128,30 @@ main = do
           pure unit
         pure arr)
   log $ show l
+  let sarr :: Array String
+      sarr =   ["t1","t2","t3","t4"]
+  {-- log $ joinxxx ", " sarr --}
+  let rec = { field1: "field 1", field2: sarr }
+  log $ "record " <> show rec
+  let arr :: Array Int
+      arr = []
+  log $ show $ uncons arr
+  log $ show $ uncons arr
+  log $ show $ uncons [99]
+  log $ show $ uncons [0,1,2,3,4]
+  let sentence = ["Hello", "World", "!"]
+  logShow $ index sentence 0
+  logShow $ index sentence 7
+  logShow $ index arr 0
   log "FVT Test Suite"
-  log "--Test hSlurp"
-
-  log "Test hSlurp dat/tr05129e001412.dat"
-  {-- testHSlurp =<< readData "dat/tr05129e001412.dat" --}
   log "--Test Cov"
   log $ testCov2
+  log "--Test hSlurp"
+  {-- log "Test hSlurp dat/tr05129e001412.dat" --}
+  {-- testHSlurp =<< readData "dat/tr05129e001412.dat" --}
+  logShow $ hSlurp tr05129e001412
+{--   logShow $ hSlurp tav4 --}
+{--   logShow $ hSlurpMCtruth tav4 --}
   log "--Test FVT 1"
   -- send the list of tau tracks and a VHMeas to testFVT
   {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05129e001412.dat" --}
@@ -155,6 +172,8 @@ main = do
   {-- testRandom 100 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0 --}
                  {-- <<< uJust <<< hSlurp $ tr05129e001412 --}
   pure unit
+
+{-- foreign import joinxxx :: String -> Array String -> String --}
 
 showMomentum :: HMeas -> Effect Unit
 showMomentum h = log $ "pt,pz,fi,E ->" <> (show <<< fromHMeas) h
@@ -220,11 +239,6 @@ doFitTest vm' l5 = do
   log $           "Final vertex -> " <> show fitVertex
   log $           "end of doFitTest------------------------------------------"
 
-{-- testHSlurp :: String -> Effect Unit --}
-{-- testHSlurp ds = do --}
-{--   logShow $ hSlurp ds --}
-{--   logShow $ hSlurp tav4 --}
-{--   logShow $ hSlurpMCtruth tav4 --}
 
 
 tr05129e001412 :: String
