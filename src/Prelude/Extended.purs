@@ -48,7 +48,9 @@ fromIntegral :: Int -> Number
 fromIntegral = toNumber
 
 trace :: forall a. String -> a -> a
-trace s a = const a (unsafePerformEffect (log s))
+{-- trace s a = const a (unsafePerformEffect (log s)) --}
+trace s a = const a (unsafeLog s)
+foreign import unsafeLog :: String -> String
 
 debug :: forall a. a -> String -> a
 debug = flip trace
@@ -88,7 +90,6 @@ prettyMatrix r c v = unlines ls where
   unsafeGet i j vv = unsafePartial $ A.unsafeIndex vv $ encode c i j
   encode :: Int -> Int -> Int -> Int
   encode m i j = (i-1)*m + j - 1
---  ls = L.Cons "neuneuneu" L.Nil
   ls = do
     i <- range 1 r
     let ws :: List String
