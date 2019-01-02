@@ -31,8 +31,10 @@ import Data.Unfoldable ( replicateA )
 import Data.Tuple ( Tuple(..), fst, snd )
 import Data.Maybe ( Maybe(..), fromMaybe', fromMaybe, fromJust )
 import Data.String.CodeUnits ( fromCharArray )
-import Data.String ( length ) as S
-import Data.String.Utils ( words ) as Data.String.Utils
+import Data.String.CodeUnits ( length, dropWhile ) as S
+import Data.String.CodeUnits ( takeWhile )
+{-- import Data.String.Utils ( words ) as Data.String.Utils --}
+import Data.Char ( toCharCode )
 import Text.Format ( format, precision, width )
 import Control.MonadZero ( guard )
 import Effect.Unsafe (unsafePerformEffect)
@@ -130,13 +132,22 @@ to5fix = format (width 10 <> precision 5)
 
 -- | 'words' breaks a string up into a list of words, which were delimited
 -- | by white space.
+isSpace :: Char -> Boolean
+{-- isSpace c = c == ' ' || c == '\n' --}
+isSpace c = if uc <= 0x337
+  then uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
+  else false
+  where
+        uc :: Int
+        uc = toCharCode c
+
 words :: String -> List String
-words = L.fromFoldable <<< Data.String.Utils.words
-{-- words s = case dropWhile isSpace s of --}
-{--                                 "" -> L.Nil --}
-{--                                 str' -> let s0 = takeWhile (not isSpace) str' --}
-{--                                             s1 = dropWhile (not isSpace) str' --}
-{--                                         in s0 L.: words s1 --}
+{-- words = L.fromFoldable <<< Data.String.Utils.words --}
+words s = case S.dropWhile isSpace s of
+                                "" -> L.Nil
+                                str' -> let s0 = takeWhile (not isSpace) str'
+                                            s1 = S.dropWhile (not isSpace) str'
+                                        in s0 L.: words s1
 
 -- | 'break', applied to a predicate @p@ and a list @xs@, returns a tuple where
 -- | first element is longest prefix (possibly empty) of @xs@ of elements that
