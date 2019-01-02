@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 {--   (Unit, bind, discard, map, pure, show, unit --}
 {--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
-import Prelude.Extended ( iflt, to1fix, to5fix,   uJust, debug )
+import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug )
 
 import Effect
 import Effect.Unsafe (unsafePerformEffect)
@@ -14,17 +14,18 @@ import Control.Monad.ST ( ST )
 import Control.Monad.ST ( run, for ) as ST
 import Data.Array.ST ( STArray )
 import Data.Array.ST ( peek, poke, unsafeFreeze, thaw ) as STA
-import Data.Int (toNumber)
+import Data.Int (toNumber, fromString)
 import Data.Monoid ( mempty )
 import Data.Tuple ( Tuple(..) )
-import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith, uncons, index )
+import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith, uncons, index, drop )
 import Data.List ( List(..), range ) as L
 import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
 
 import Data.Cov (testCov2, Cov(..), Jac(..), Dim3, Vec3, Jac33, Cov3, fromArray, (*.), inv)
-import Data.String ( replace, drop, contains, Pattern(..), Replacement(..) ) as S
-import Data.String.CodeUnits ( singleton, dropWhile, fromCharArray, toCharArray )
+import Data.String ( replace, contains, Pattern(..), Replacement(..) ) as S
+import Data.String.CodeUnits ( singleton, drop, dropWhile, fromCharArray, toCharArray, take, takeWhile ) as CU
+import Data.Char ( toCharCode )
 import Data.Number ( fromString ) as DN
 import Text.Format ( format, precision, width )
 
@@ -47,20 +48,37 @@ import Test.Random ( testRandom )
 
 main :: Effect Unit
 main = do
-  log $ show $ toCharArray $ "Ʈest" <> "ℌ"
-  log $ show $ fromCharArray $ toCharArray "test test"
+  log $ show $ CU.toCharArray $ "Ʈest" <> "ℌ"
+  log $ show $ CU.fromCharArray $ CU.toCharArray "test test"
   log $ show $ DN.fromString "1234.5"
   log $ show $ DN.fromString "infinite"
-  log $ show $ singleton '>' <> singleton '♜' <> singleton '<'
+  log $ show $ CU.singleton '>' <> CU.singleton '♜' <> CU.singleton '<'
   log $ show $ S.replace (S.Pattern "<=") (S.Replacement "≤") "a <= b <= c"
   log $ show $ S.replace (S.Pattern "≤") (S.Replacement "|   <=    |") "a♜ ≤ b <= c"
-  log $ show $ S.drop 0 "a♜ ≤ b <= c"
-  log $ show $ S.drop 1 "a♜ ≤ b <= c"
-  log $ show $ S.drop 2 "a♜ ≤ b <= c"
-  log $ show $ S.drop 3 "a♜ ≤ b <= c"
-  log $ show $ dropWhile (_ /= 'c') "a♜ <= b ≤ c"
-  log $ show $ dropWhile (_ /= 'b') "a♜ <= b ≤ c"
-  log $ show $ dropWhile (_ /= 'a') "a♜ <= b ≤ c"
+  log $ show $ CU.drop 0 "a♜ ≤ b <= c"
+  log $ show $ CU.drop 1 "a♜ ≤ b <= c"
+  log $ show $ CU.drop 2 "a♜ ≤ b <= c"
+  log $ show $ CU.drop 3 "a♜ ≤ b <= c"
+  log $ show $ CU.dropWhile (_ /= 'c') "a♜ <= b ≤ c"
+  log $ show $ CU.dropWhile (_ /= 'b') "a♜ <= b ≤ c"
+  log $ show $ CU.dropWhile (_ /= 'a') "a♜ <= b ≤ c"
+  log $ show $ CU.take 1 "a♜ ≤ b <= c"
+  log $ show $ CU.take 100 "a♜ ≤ b <= c"
+  log $ show $ CU.take (-100) "a♜ ≤ b <= c"
+  log $ show $ CU.takeWhile (_ /= 'b') "a♜ <= b ≤ c"
+  log $ show $ CU.takeWhile (_ /= 'z') "a♜ <= b ≤ c"
+  let ds :: String
+      ds = """
+   text 1234
+   3.355679512023926       3.489715576171875       7.110095977783203    
+  4.5451703E-03
+"""
+  logShow $ words ds
+  let cc :: Int
+      cc = toCharCode 'x'
+  logShow $ cc
+  logShow $ fromString "12.3456"
+  logShow $ fromString "12"
   {-- log $ show $ format (width 8 <> precision 3) 12.34567 --}
   {-- log $ show $ format (width 8 <> precision 3) (-0.815) --}
   log $ show (-0.815)
@@ -139,6 +157,9 @@ main = do
   log $ show $ uncons arr
   log $ show $ uncons [99]
   log $ show $ uncons [0,1,2,3,4]
+  log $ show $ drop 0 [0,1,2,3,4]
+  log $ show $ drop 2 [0,1,2,3,4]
+  log $ show $ drop 20 [0,1,2,3,4]
   let sentence = ["Hello", "World", "!"]
   logShow $ index sentence 0
   logShow $ index sentence 7
