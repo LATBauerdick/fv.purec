@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 {--   (Unit, bind, discard, map, pure, show, unit --}
 {--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
-import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug )
+import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral )
 
 import Effect
 import Effect.Unsafe (unsafePerformEffect)
@@ -14,10 +14,14 @@ import Control.Monad.ST ( ST )
 import Control.Monad.ST ( run, for ) as ST
 import Data.Array.ST ( STArray )
 import Data.Array.ST ( peek, poke, unsafeFreeze, thaw ) as STA
-import Data.Int (toNumber, fromString)
+import Data.Int ( toNumber, fromString, floor )
+import Math ( abs, sqrt, floor ) as M
+import Global (infinity)
+import Data.Enum (fromEnum, toEnum)
+
 import Data.Monoid ( mempty )
 import Data.Tuple ( Tuple(..) )
-import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith, uncons, index, drop )
+import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith, uncons, index, drop, range )
 import Data.List ( List(..), range ) as L
 import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
@@ -77,6 +81,9 @@ main = do
   let cc :: Int
       cc = toCharCode 'x'
   logShow $ cc
+  let cc :: Int
+      cc =  fromEnum 'x'
+  log $ "fromEnum Char does NOT work: " <> show cc
   logShow $ fromString "12.3456"
   logShow $ fromString "12"
   {-- log $ show $ format (width 8 <> precision 3) 12.34567 --}
@@ -133,6 +140,29 @@ main = do
   log $ "Jac = Cov * Cov = " <> show j33
   let j = j3 *. c3c
   log $ "Jac * Cov = " <> show j
+  logShow $ (fromArray [1.0,2.0,3.0,4.0,5.0,6.0])::Cov3 -- cov matrix --}
+  let arr :: Array Int
+      arr = do
+          let n=5
+          i0 <- range 0 (n-1)
+          j0 <- range i0 (n-1)
+          pure $ 10*i0+j0
+  logShow $ arr
+  let lll :: L.List Int
+      lll = do
+          let n=5
+          i0 <- L.range 0 (n-1)
+          j0 <- L.range i0 (n-1)
+          pure $ 10*i0+j0
+  logShow $ lll
+  logShow $ floor <<< M.sqrt <<< fromIntegral $ 9
+  logShow $ floor 9.9
+  let x = 9.0
+  logShow $ x
+  logShow $ infinity
+  logShow $ x == infinity
+  logShow $ M.floor 9.9
+  logShow $ M.sqrt 9.0
   {-- ST.run (ST.for 0 5 (\i0 -> do (log $ "for " <> show i0))) --}
   let
       run :: forall a. (forall r. ST r (STArray r a)) -> Array a
@@ -176,7 +206,7 @@ main = do
   log "--Test FVT 1"
   -- send the list of tau tracks and a VHMeas to testFVT
   {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05129e001412.dat" --}
-  {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp $ tr05129e001412 --}
+  testFVT [0,2,3,4,5] <<< uJust <<< hSlurp $ tr05129e001412
   {-- log "--Test FVT 2" --}
   {-- testFVT [0,1,2,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05158e004656.dat" --}
   {-- log "--Test FVT 3" --}
