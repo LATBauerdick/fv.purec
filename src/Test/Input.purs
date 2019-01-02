@@ -64,8 +64,7 @@ hSlurp' :: Array Number -> Maybe VHMeas
 hSlurp' inp = do
   let v0    = fromArray $ take 3 inp          -- initial vertex pos
       cv0   = fromArray (take 9 $ drop 3 inp) -- cov matrix
-      xxx   = 12 `debug` (show cv0 <> "xxxxxxxxxxxxxxxxx")
-      v     = XMeas v0 cv0 `debug` "xxxxxxxxxxxxxxxxx"
+      v     = XMeas v0 cv0
   w2pt      <- inp !! 12  -- how to calc pt from w; 1 in case of CMS
   mnt       <- inp !! 13  -- number of helices to follow --}
   let nt    = Data.Int.round mnt
