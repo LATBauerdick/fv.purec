@@ -51,10 +51,10 @@ hSlurp ds = vhm where
   npu :: Maybe Int
   npu = do
               key <- L.head ws
-              guard $ key == "PU_zpositions:"
+              {--LATB FIX THIS guard $ key == "PU_zpositions:" --}
               snpu <- L.index ws 1
               Data.Int.fromString snpu
-  vhm = case npu of
+  vhm = case npu  of
               Nothing -> hSlurp' $ fromFoldable $ L.mapMaybe fromString ws
               Just n -> let vArr = fromFoldable $ L.mapMaybe fromString (L.drop (n+2) ws)
                         in hSlurp' vArr
@@ -62,9 +62,10 @@ hSlurp ds = vhm where
 -- slurp in the measurements of vertex and helices
 hSlurp' :: Array Number -> Maybe VHMeas
 hSlurp' inp = do
-  let v0    = fromArray $ take 3 inp       -- initial vertex pos
+  let v0    = fromArray $ take 3 inp          -- initial vertex pos
       cv0   = fromArray (take 9 $ drop 3 inp) -- cov matrix
-      v     = XMeas v0 cv0
+      xxx   = 12 `debug` (show cv0 <> "xxxxxxxxxxxxxxxxx")
+      v     = XMeas v0 cv0 `debug` "xxxxxxxxxxxxxxxxx"
   w2pt      <- inp !! 12  -- how to calc pt from w; 1 in case of CMS
   mnt       <- inp !! 13  -- number of helices to follow --}
   let nt    = Data.Int.round mnt
