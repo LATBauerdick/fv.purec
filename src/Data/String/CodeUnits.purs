@@ -6,6 +6,8 @@ module Data.String.CodeUnits
   , countPrefix
   , drop
   , dropWhile
+  , take
+  , takeWhile
   , fromCharArray
   , toCharArray
   , length
@@ -85,7 +87,25 @@ foreign import countPrefix :: (Char -> Boolean) -> String -> Int
 -- | Returns the string without the first `n` characters.
 foreign import drop :: Int -> String -> String
 
+-- | Returns the first `n` characters of the string.
+-- |
+-- | ```purescript
+-- | take 5 "Hello World" == "Hello"
+-- | ```
+-- |
+foreign import take :: Int -> String -> String
+
 -- | Returns the suffix remaining after `takeWhile`.
 dropWhile :: (Char -> Boolean) -> String -> String
 dropWhile p s = drop (countPrefix p s) s
+
+-- | Returns the longest prefix (possibly empty) of characters that satisfy
+-- | the predicate.
+-- |
+-- | ```purescript
+-- | takeWhile (_ /= ':') "http://purescript.org" == "http"
+-- | ```
+-- |
+takeWhile :: (Char -> Boolean) -> String -> String
+takeWhile p s = take (countPrefix p s) s
 
