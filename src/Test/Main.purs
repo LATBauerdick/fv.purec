@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 {--   (Unit, bind, discard, map, pure, show, unit --}
 {--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
-import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral )
+import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral, normals, boxMuller )
 
 import Effect
 import Effect.Unsafe (unsafePerformEffect)
@@ -21,7 +21,9 @@ import Data.Enum (fromEnum, toEnum)
 
 import Data.Monoid ( mempty )
 import Data.Tuple ( Tuple(..) )
-import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith, uncons, index, drop, range )
+import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith, uncons, index, drop, range, concat, take )
+import Data.Unfoldable ( replicateA )
+import Data.List.Lazy ( replicateM )
 import Data.List ( List(..), range ) as L
 import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
@@ -90,7 +92,7 @@ main = do
   {-- log $ show $ format (width 8 <> precision 3) (-0.815) --}
   log $ show (-0.815)
   log $ show (-0.072)
-  {-- log $ show $ format (width 8 <> precision 3) (-0.815999999999999999999999999) --}
+  log $ show $ format (width 8 <> precision 3) (-0.815999999999999999999999999)
   log $ show 12.3456789123456789
   log $ show 12.3456789e-3
   log $ show $ to5fix 12.3456789e-3
@@ -194,6 +196,33 @@ main = do
   logShow $ index sentence 0
   logShow $ index sentence 7
   logShow $ index arr 0
+  log $ show $ concat [[1, 2, 3], [], [4, 5, 6]]
+  {-- let ers = do --}
+  {--       rs <- (replicateA 5 (log "mmm")) --}
+  {--       pure unit --}
+  let ers :: Int -> Effect (Array Number)
+      ers n = do
+        ls0 <- boxMuller
+        ls1 <- boxMuller
+        ls2 <- boxMuller
+        ls3 <- boxMuller
+        ls4 <- boxMuller
+        {-- lss <- replicateA ((n+1)/2) boxMuller --}
+        lss <- replicateA 5 boxMuller
+        let lls = take n $ concat [ls0, ls1, ls2, ls3, ls4]
+        let ls = take n $ concat lss
+        let xx = 12 `debug` (show lls <> "  randoms")
+        let x0 = 12 `debug` (show ls <> "  randoms")
+        pure ls
+      rs :: Int -> Effect Unit
+      rs n = do
+         ls <- ers n
+         let x0 = 12 `debug` (show ls <> "xxxxxxxxx")
+         pure unit
+  uuu <- forE 1 6 (\i -> rs i)
+  rr1 <- normals 5
+  {-- ms <- replicateM 5 $ rs 5 --}
+  log $ "xxxxxxxxxxxxx"
   log "FVT Test Suite"
   log "--Test Cov"
   log $ testCov2
@@ -220,8 +249,8 @@ main = do
   {-- traverse_ showMomentum $ helices vm --}
   {-- doCluster vm --}
   log "--Test Random"
-  {-- testRandom 100 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0 --}
-                 {-- <<< uJust <<< hSlurp $ tr05129e001412 --}
+  testRandom 10 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0
+                 <<< uJust <<< hSlurp $ tr05129e001412
   pure unit
 
 {-- foreign import joinxxx :: String -> Array String -> String --}
