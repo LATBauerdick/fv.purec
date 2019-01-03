@@ -12,6 +12,7 @@ module Prelude.Extended (
   , to1fix, to2fix, to3fix, to5fix
   , error
   , undefined
+  , boxMuller
   ) where
 
 import Prelude
@@ -27,7 +28,8 @@ import Data.List ( List(..), (:), range, fromFoldable ) as L
 import Data.Array ( unsafeIndex, range, length, take, concat
   , fromFoldable, replicate
   ) as A
-import Data.Unfoldable ( replicateA )
+import Data.Unfoldable ( replicate )
+import Data.Traversable ( sequence )
 import Data.Tuple ( Tuple(..), fst, snd )
 import Data.Maybe ( Maybe(..), fromMaybe', fromMaybe, fromJust )
 import Data.String.CodeUnits ( fromCharArray )
@@ -213,8 +215,16 @@ boxMuller = do
               pure $ [ b1, b2 ]
 normals :: Int -> Effect (Array Number)
 normals n = do
-  ls <- replicateA ((n+1)/2) $ boxMuller
-  pure $ A.take n $ A.concat ls
+  {-- ls <- replicateA ((n+1)/2) $ boxMuller --}
+  {-- ls <- sequence (replicate n boxMuller) --}
+  {-- let x = ls `debug` (show ls <> "xxxxxxxx") --}
+  {-- pure $ A.take n $ A.concat ls --}
+  ls0 <- boxMuller
+  ls1 <- boxMuller
+  ls2 <- boxMuller
+  ls3 <- boxMuller
+  ls4 <- boxMuller
+  pure $ A.take n $ A.concat [ls0, ls1, ls2, ls3, ls4]
 
 -- | Calculate mean and standard deviation
 stats :: Array Number -> Tuple Number Number
