@@ -35,7 +35,6 @@ import Data.Maybe ( Maybe(..), fromMaybe', fromMaybe, fromJust )
 import Data.String.CodeUnits ( fromCharArray )
 import Data.String.CodeUnits ( length, dropWhile ) as S
 import Data.String.CodeUnits ( takeWhile )
-{-- import Data.String.Utils ( words ) as Data.String.Utils --}
 import Data.Char ( toCharCode )
 import Text.Format ( format, precision, width )
 import Control.MonadZero ( guard )
