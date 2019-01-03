@@ -19,15 +19,19 @@ import Data.Unfoldable (replicate)
 import Data.Int as Int
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.String (length, replace, Pattern(..), Replacement(..))
-import Data.String.CodePoints (singleton, dropWhile, fromCodePointArray, codePointFromChar)
+{-- import Data.String.CodePoints (singleton, dropWhile, fromCodePointArray, codePointFromChar) --}
+import Data.String.CodeUnits (singleton, dropWhile, fromCharArray, indexOf, take )
 import Math (round, pow, abs)
 
 -- | Pad a string on the left up to a given maximum length. The padding
 -- | character can be specified.
 padLeft :: Char -> Int -> String -> String
 padLeft c len str = prefix <> str
-  where prefix = fromCodePointArray $
-          map codePointFromChar (replicate (len - length str) c)
+  where prefix = take (len - length str) "                                                              "
+  {-- where prefix = fromCharArray $ --}
+  {--         (replicate (len - length str) c) --}
+  {-- where prefix = fromCodePointArray $ --}
+  {--         map codePointFromChar (replicate (len - length str) c) --}
 
 type PropertiesRecord =
   { width :: Maybe Int
@@ -141,26 +145,38 @@ instance formatNumber :: Format Number where
           else
             numSgn <> padLeft padChar (len - length numSgn) numAbsStr
       Nothing -> numSgn <> numAbsStr
-
    where
+-- round to requested precision
      num = case rec.precision of
              Nothing -> num'
              Just digits ->
                let f = 10.0 `pow` Int.toNumber digits
                in  round (f * num') / f
-     isSigned = fromMaybe false rec.signed
+     prec = fromMaybe 999 rec.precision
+
      padChar = fromMaybe ' ' rec.padChar
+-- deal with negative numbers
+     isSigned = fromMaybe false rec.signed
      nonNegative = num >= 0.0
-     numAbsStr'' = show (abs num)
-     numAbsStr' = case rec.decimalMark of
-                    Nothing -> numAbsStr''
-                    Just d -> replace (Pattern ".") (Replacement (singleton $ codePointFromChar d)) numAbsStr''
-     numAbsStr = case rec.precision of
-                   Nothing -> numAbsStr'
-                   Just p -> numAbsStr' <> paddedZeros p
-     usedDelimiter = codePointFromChar $ fromMaybe '.' rec.decimalMark
-     paddedZeros p = let d = length (dropWhile (_ /= usedDelimiter) numAbsStr') - 1
-                     in fromCodePointArray $ map codePointFromChar (replicate (p - d) '0')
+     numAbsStr''' = show (abs num)
      numSgn = if nonNegative
                 then (if isSigned then "+" else "")
                 else "-"
+-- replace decimal point if requested
+     numAbsStr'' = case rec.decimalMark of
+                    Nothing -> numAbsStr'''
+                    {-- Just d -> replace (Pattern ".") (Replacement (singleton $ codePointFromChar d)) numAbsStr''' --}
+                    Just d -> replace (Pattern ".") (Replacement (singleton $ d)) numAbsStr'''
+-- pad with zeros if needed
+     {-- paddedZeros p = fromCharArray $ (replicate (p - d) '0') where --}
+     paddedZeros p = take (p - d) "00000000000000000000000000000000000000000000000000000000000000000000000" where
+                         d = length (dropWhile (_ /= usedDelimiter) numAbsStr'') - 1
+                       {-- in fromCodePointArray $ map codePointFromChar (replicate (p - d) '0') --}
+     numAbsStr' = case rec.precision of
+                   Nothing -> numAbsStr''
+                   Just p -> numAbsStr'' <> paddedZeros p
+-- cut off excess zeros
+     usedDelimiter = fromMaybe '.' rec.decimalMark
+     i = fromMaybe 999 (indexOf (Pattern (singleton usedDelimiter)) numAbsStr')
+     numAbsStr = take (i+prec+1) numAbsStr'
+     {-- usedDelimiter = codePointFromChar $ fromMaybe '.' rec.decimalMark --}
