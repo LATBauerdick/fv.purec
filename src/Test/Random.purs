@@ -1,12 +1,12 @@
 module Test.Random ( testRandom ) where
-
-import Prelude.Extended ( normals, stats, show , bind, discard, pure, map, Unit, unit
+import Prelude
+import Prelude.Extended ( normals, stats, show , bind, discard, pure, map, Unit, unit, debug
   , (<<<) , ($), (+), (<>), (<$>)
   )
 import Effect ( Effect )
 import Effect.Console ( log )
 import Data.List.Lazy ( replicateM )
-import Data.Array ( fromFoldable, zipWith ) as A
+import Data.Array ( fromFoldable, zipWith, cons ) as A
 import Data.Traversable ( for )
 import Data.Tuple ( Tuple (..) )
 
@@ -47,7 +47,15 @@ testRandom :: Int -> VHMeas -> Effect Unit
 testRandom cnt vm = do
   log $ "Fit Mass  " <> (show <<< invMass <<< map fromQMeas
                         <<< fitMomenta <<< fit $ vm)
-  ms <- replicateM cnt $ fitm <$> (randomize vm)
+  {-- ms <- replicateM cnt $ fitm <$> (randomize vm) --}
+  let repM :: forall m a. Monad m => Int -> m a -> m (Array a)
+      repM n m
+        | n < one = pure []
+        | otherwise = do
+            a <- m
+            as <- repM (n - one) m
+            pure (A.cons a as)
+  ms <- repM cnt $ fitm <$> (randomize vm)
   let (Tuple m dm) = stats $ A.fromFoldable ms
   log $ "Mean Mass " <> show (MMeas {m, dm})
   {-- let hist = histogram binSturges (V.toList hf) --}
