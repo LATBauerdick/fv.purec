@@ -249,7 +249,7 @@ main = do
   {-- traverse_ showMomentum $ helices vm --}
   {-- doCluster vm --}
   log "--Test Random"
-  testRandom 10 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0
+  testRandom 50 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0
                  <<< uJust <<< hSlurp $ tr05129e001412
   pure unit
 
