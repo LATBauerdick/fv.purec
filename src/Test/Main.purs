@@ -32,7 +32,6 @@ import Data.Cov (testCov2, Cov(..), Jac(..), Dim3, Vec3, Jac33, Cov3, fromArray,
 import Data.String ( replace, contains, Pattern(..), Replacement(..) ) as S
 import Data.String.CodeUnits ( singleton, drop, dropWhile, fromCharArray, toCharArray, take, takeWhile ) as CU
 import Data.Char ( toCharCode )
-import Data.Number ( fromString ) as DN
 import Text.Format ( format, precision, width )
 
 import FV.Types
@@ -58,8 +57,6 @@ main = do
   log $ show $ CU.fromCharArray $ ['t', 'e', 's', 't'] -- CU.toCharArray "test test"
   log $ show $ CU.fromCharArray $ CU.toCharArray "test test"
   log $ show $ CU.fromCharArray $ ['x', 'y', 'z']
-  log $ show $ DN.fromString "1234.5"
-  log $ show $ DN.fromString "infinite"
   log $ show $ CU.singleton '>' <> CU.singleton '♜' <> CU.singleton '<'
   log $ show $ S.replace (S.Pattern "<=") (S.Replacement "≤") "a <= b <= c"
   log $ show $ S.replace (S.Pattern "≤") (S.Replacement "|   <=    |") "a♜ ≤ b <= c"
@@ -191,7 +188,6 @@ main = do
   log $ show l
   let sarr :: Array String
       sarr =   ["t1","t2","t3","t4"]
-  {-- log $ joinxxx ", " sarr --}
   let rec = { field1: "field 1", field2: sarr }
   log $ "record " <> show rec
   let arr :: Array Int
@@ -228,7 +224,7 @@ main = do
       rs :: Int -> Effect Unit
       rs n = do
          ls <- ers n
-         let x0 = 12 `debug` (show ls <> "xxxxxxxxx")
+         let x0 = 12 `debug` (show ls)
          pure unit
   uuu <- forE 1 6 (\i -> rs i)
   rr1 <- normals 5
