@@ -51,9 +51,9 @@ fromIntegral :: Int -> Number
 fromIntegral = toNumber
 
 trace :: forall a. String -> a -> a
-{-- trace s a = const a (unsafePerformEffect (log s)) --}
-trace s a = const a (unsafeLog s)
-foreign import unsafeLog :: String -> String
+trace s a = const a (unsafePerformEffect (log s))
+{-- trace s a = const a (unsafeLog s) --}
+{-- foreign import unsafeLog :: String -> String --}
 
 debug :: forall a. a -> String -> a
 debug = flip trace
