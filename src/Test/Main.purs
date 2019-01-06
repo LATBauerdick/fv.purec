@@ -4,7 +4,7 @@ import Prelude
 {--   (Unit, bind, discard, map, pure, show, unit --}
 {--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
 import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral, normals, boxMuller, undefined )
-
+import Global ( readInt )
 import Effect
 import Effect.Unsafe (unsafePerformEffect)
 import Effect.Console ( log, logShow )
@@ -90,6 +90,12 @@ main = do
   log $ "fromEnum Char does NOT work: " <> show cc
   logShow $ fromString "12.3456"
   logShow $ fromString "12"
+  logShow $ readInt 10 "12"
+  logShow $ readInt 10 "    12.1234"
+  logShow $ readInt 0 "0x12"
+  logShow $ readInt 0 "012"
+  logShow $ readInt 16 "12"
+  logShow $ readInt 17 "12"
   log $ show $ format (width 8 <> precision 3) 12.34567
   log $ show $ format (width 8 <> precision 3) (-0.815)
   log $ show $ format (width 18 <> precision 8) 12.34567
