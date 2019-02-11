@@ -27,7 +27,6 @@ import Data.Foldable (sum, traverse_)
 import Data.Cov (testCov2, Cov(..), Jac(..), Dim3, Vec3, Jac33, Cov3, fromArray, (*.), inv)
 import Data.String ( replace, contains, Pattern(..), Replacement(..) ) as S
 import Data.String.CodeUnits ( singleton, drop, dropWhile, countPrefix, fromCharArray, toCharArray, take, takeWhile ) as CU
-import Data.Char ( toCharCode )
 import Data.Number ( fromString ) as DN
 import Text.Format ( format, precision, width )
 
@@ -81,9 +80,6 @@ main = do
   4.5451703E-03
 """
   logShow $ words ds
-  let cc :: Int
-      cc = toCharCode 'x'
-  logShow $ cc
 --  let cc :: Int
 --      cc =  fromEnum 'x'
 --  log $ "fromEnum Char does NOT work: " <> show cc
