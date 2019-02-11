@@ -3,10 +3,9 @@ module Test.Main where
 import Prelude
 {--   (Unit, bind, discard, map, pure, show, unit --}
 {--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
-import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral, normals, boxMuller, undefined )
+import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral, normals, boxMuller, undefined, fromList )
 
-import Effect
-import Effect.Unsafe (unsafePerformEffect)
+import Effect ( Effect, forE )
 import Effect.Console ( log, logShow )
 {-- import Node.FS.Sync ( readTextFile ) --}
 {-- import Node.Encoding ( Encoding(..) ) --}
@@ -15,22 +14,19 @@ import Control.Monad.ST ( run, for ) as ST
 import Data.Array.ST ( STArray )
 import Data.Array.ST ( peek, poke, unsafeFreeze, thaw ) as STA
 import Data.Int ( toNumber, fromString, floor )
-import Math ( abs, sqrt, floor ) as M
+import Math ( sqrt, floor ) as M
 import Global (infinity)
-import Data.Enum (fromEnum, toEnum)
 
-import Data.Monoid ( mempty )
 import Data.Tuple ( Tuple(..) )
 import Data.Array ( length, zip, foldl, fromFoldable, replicate, zipWith, uncons, index, drop, range, concat, take )
 import Data.Unfoldable ( replicateA )
-import Data.List.Lazy ( replicateM )
-import Data.List ( List(..), range ) as L
+import Data.List ( List, range ) as L
 import Data.Maybe  ( Maybe(..))
 import Data.Foldable (sum, traverse_)
 
 import Data.Cov (testCov2, Cov(..), Jac(..), Dim3, Vec3, Jac33, Cov3, fromArray, (*.), inv)
 import Data.String ( replace, contains, Pattern(..), Replacement(..) ) as S
-import Data.String.CodeUnits ( singleton, drop, dropWhile, fromCharArray, toCharArray, take, takeWhile ) as CU
+import Data.String.CodeUnits ( singleton, drop, dropWhile, countPrefix, fromCharArray, toCharArray, take, takeWhile ) as CU
 import Data.Char ( toCharCode )
 import Data.Number ( fromString ) as DN
 import Text.Format ( format, precision, width )
@@ -67,6 +63,9 @@ main = do
   log $ show $ CU.drop 1 "a♜ ≤ b <= c"
   log $ show $ CU.drop 2 "a♜ ≤ b <= c"
   log $ show $ CU.drop 3 "a♜ ≤ b <= c"
+  log $ "CU.countPrefix"
+  log $ show $ CU.countPrefix (_ /= 'c') "aaaxxxcccxxx"
+  log $ "CU.dropWhile"
   log $ show $ CU.dropWhile (_ /= 'c') "a♜ <= b ≤ c"
   log $ show $ CU.dropWhile (_ /= 'b') "a♜ <= b ≤ c"
   log $ show $ CU.dropWhile (_ /= 'a') "a♜ <= b ≤ c"
@@ -85,16 +84,16 @@ main = do
   let cc :: Int
       cc = toCharCode 'x'
   logShow $ cc
-  let cc :: Int
-      cc =  fromEnum 'x'
-  log $ "fromEnum Char does NOT work: " <> show cc
+--  let cc :: Int
+--      cc =  fromEnum 'x'
+--  log $ "fromEnum Char does NOT work: " <> show cc
   logShow $ fromString "12.3456"
   logShow $ fromString "12"
   log $ show $ format (width 8 <> precision 3) 12.34567
   log $ show $ format (width 8 <> precision 3) (-0.815)
   log $ show $ format (width 18 <> precision 8) 12.34567
   log $ show $ format (width 18 <> precision 8) (-0.815)
-  {-- logShow $ undefined == 1 --}
+  logShow $ undefined == 1
   log $ show (-0.815)
   log $ show (-0.072)
   log $ show $ format (width 8 <> precision 3) (-0.815999999999999999999999999)
@@ -134,6 +133,7 @@ main = do
       v3 :: Vec3
       v3 = fromArray [10.0,11.0,12.0]
   log $ show xc3 `debug` show v3
+  log $ show v3
   log $ "Vec *. Vec = " <> show (v3 *. v3)
   let c3a = (fromArray[1.0,2.0,3.0,4.0,5.0,6.0])::Cov3
       c3b = (fromArray [0.0,0.0,1.0,1.0,0.0,0.0])::Cov3
@@ -155,13 +155,15 @@ main = do
           j0 <- range i0 (n-1)
           pure $ 10*i0+j0
   logShow $ arr
-  let lll :: L.List Int
-      lll = do
+  let ll  :: L.List Int
+      ll  = do
           let n=5
           i0 <- L.range 0 (n-1)
           j0 <- L.range i0 (n-1)
           pure $ 10*i0+j0
-  logShow $ lll
+  logShow $ ll
+  logShow $ fromFoldable ll
+  logShow $ fromList ll
   logShow $ floor <<< M.sqrt <<< fromIntegral $ 9
   logShow $ floor 9.9
   let x = 9.0
@@ -226,17 +228,16 @@ main = do
          pure unit
   uuu <- forE 1 6 (\i -> rs i)
   rr1 <- normals 5
-  {-- ms <- replicateM 5 $ rs 5 --}
   log $ "xxxxxxxxxxxxx"
   log "FVT Test Suite"
   log "--Test Cov"
   log $ testCov2
   log "--Test hSlurp"
-  {-- log "Test hSlurp dat/tr05129e001412.dat" --}
+  log "Test hSlurp dat/tr05129e001412.dat"
   {-- testHSlurp =<< readData "dat/tr05129e001412.dat" --}
   logShow $ hSlurp tr05129e001412
-{--   logShow $ hSlurp tav4 --}
-{--   logShow $ hSlurpMCtruth tav4 --}
+  logShow $ hSlurp tav4
+  logShow $ hSlurpMCtruth tav4
   log "--Test FVT 1"
   -- send the list of tau tracks and a VHMeas to testFVT
   {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05129e001412.dat" --}
