@@ -1,12 +1,10 @@
 module Test.Main where
 
-import Prelude
-{--   (Unit, bind, discard, map, pure, show, unit --}
-{--   , ($), (*), (<<<), (<>), (=<<), (/=), (-) ) --}
-import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral, normals, boxMuller, undefined, fromList )
+import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral, normals, boxMuller, undefined, fromList, Unit, ($), (<>), (<<<), (*), (-), (+), (==), (/=), (>>=), show, discard, map, bind, mempty, pure, unit, negate, one )
 
 import Effect ( Effect, forE )
 import Effect.Console ( log, logShow )
+import Global ( readInt )
 {-- import Node.FS.Sync ( readTextFile ) --}
 {-- import Node.Encoding ( Encoding(..) ) --}
 import Control.Monad.ST ( ST )
@@ -26,8 +24,7 @@ import Data.Foldable (sum, traverse_)
 
 import Data.Cov (testCov2, Cov(..), Jac(..), Dim3, Vec3, Jac33, Cov3, fromArray, (*.), inv)
 import Data.String ( replace, contains, Pattern(..), Replacement(..) ) as S
-import Data.String.CodeUnits ( singleton, drop, dropWhile, countPrefix, fromCharArray, toCharArray, take, takeWhile ) as CU
-import Data.Number ( fromString ) as DN
+import Data.String.CodeUnits ( countPrefix, singleton, drop, dropWhile, fromCharArray, toCharArray, take, takeWhile ) as CU
 import Text.Format ( format, precision, width )
 
 import FV.Types
@@ -53,8 +50,6 @@ main = do
   log $ show $ CU.fromCharArray $ ['t', 'e', 's', 't'] -- CU.toCharArray "test test"
   log $ show $ CU.fromCharArray $ CU.toCharArray "test test"
   log $ show $ CU.fromCharArray $ ['x', 'y', 'z']
-  log $ show $ DN.fromString "1234.5"
-  log $ show $ DN.fromString "infinite"
   log $ show $ CU.singleton '>' <> CU.singleton '♜' <> CU.singleton '<'
   log $ show $ S.replace (S.Pattern "<=") (S.Replacement "≤") "a <= b <= c"
   log $ show $ S.replace (S.Pattern "≤") (S.Replacement "|   <=    |") "a♜ ≤ b <= c"
@@ -85,6 +80,12 @@ main = do
 --  log $ "fromEnum Char does NOT work: " <> show cc
   logShow $ fromString "12.3456"
   logShow $ fromString "12"
+  {-- logShow $ readInt 10 "12" --}
+  {-- logShow $ readInt 10 "    12.1234" --}
+  {-- logShow $ readInt 0 "0x12" --}
+  {-- logShow $ readInt 0 "012" --}
+  {-- logShow $ readInt 16 "12" --}
+  {-- logShow $ readInt 17 "12" --}
   log $ show $ format (width 8 <> precision 3) 12.34567
   log $ show $ format (width 8 <> precision 3) (-0.815)
   log $ show $ format (width 18 <> precision 8) 12.34567
@@ -183,7 +184,6 @@ main = do
   log $ show l
   let sarr :: Array String
       sarr =   ["t1","t2","t3","t4"]
-  {-- log $ joinxxx ", " sarr --}
   let rec = { field1: "field 1", field2: sarr }
   log $ "record " <> show rec
   let arr :: Array Int
@@ -220,7 +220,7 @@ main = do
       rs :: Int -> Effect Unit
       rs n = do
          ls <- ers n
-         let x0 = 12 `debug` (show ls <> "xxxxxxxxx")
+         let x0 = 12 `debug` (show ls)
          pure unit
   uuu <- forE 1 6 (\i -> rs i)
   rr1 <- normals 5

@@ -58,6 +58,19 @@ PURS_FFI_FUNC_2(Data_String_CodeUnits_drop, n0, s0, { //??? does not work with u
   return out;
 });
 
+PURS_FFI_FUNC_2(Data_String_CodeUnits_take, n0, s0, { //??? does not work with unicode chars
+  size_t n = purs_any_get_int(n0);
+  if (n <= 0) return purs_any_string_new("");
+  const char * s = purs_any_get_string(s0);
+  size_t sl = strlen(s);
+  if (n >= sl) n = sl;
+  char * sr = (char *) malloc(n + 1);
+  strlcpy(sr, s, n+1); // strlcpy makes sure there's a null character at the end
+  const purs_any_t * out = purs_any_string_new(sr);
+  free(sr);
+  return out;
+});
+
 PURS_FFI_FUNC_2(Data_String_CodeUnits_countPrefix, f, s0, { // only works with ASCII...
  // foreign import countPrefix :: (Char -> Boolean) ->  String -> Int
   const char * s = purs_any_get_string(s0);

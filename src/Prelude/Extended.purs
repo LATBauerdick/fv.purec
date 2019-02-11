@@ -49,7 +49,7 @@ fromList = A.fromFoldable
 fromIntegral :: Int -> Number
 fromIntegral = toNumber
 
-trace :: forall a. String -> a -> a
+{-- trace :: forall a. String -> a -> a --}
 {-- trace s a = const a (unsafePerformEffect (log s)) --}
 trace s a = const a (unsafeLog s)
 foreign import unsafeLog :: String -> String
@@ -134,12 +134,12 @@ to5fix = format (width 10 <> precision 5)
 -- | by white space.
 isSpace :: Char -> Boolean
 {-- isSpace c = c == ' ' || c == '\n' --}
-isSpace c = if uc <= 0x337
-  then uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
-  else false
+isSpace c = uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
   where
         uc :: Int
         uc = toCharCode c
+
+foreign import toCharCode :: Char -> Int
 
 words :: String -> List String
 {-- words = L.fromFoldable <<< Data.String.Utils.words --}

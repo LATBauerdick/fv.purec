@@ -1,9 +1,9 @@
 module Test.Input ( hSlurp, hSlurpMCtruth ) where
 
-import Prelude.Extended (bind, discard, pure, words, ($), (*), (+), (-), (/), (==))
+import Prelude.Extended (bind, discard, pure, words, otherwise, ($), (*), (+), (-), (/), (==), (>>>) )
 
 import Control.MonadZero ( guard )
-import Data.Number ( fromString )
+import Global ( readFloat, isFinite ) as G
 import Data.Int ( fromString, round ) as Data.Int
 import Data.Array ( take, drop, (!!), fromFoldable, mapMaybe, range, slice )
 import Data.List ( head, index, slice, mapMaybe, drop ) as L
@@ -19,6 +19,12 @@ type FilePath = String -- from Node.Path
 
 {-- listToArray :: forall a. List a -> Array a --}
 {-- listToArray = ?whatGoesHere --}
+
+fromString :: String -> Maybe Number
+fromString = G.readFloat >>> check
+  where
+    check num | G.isFinite num = Just num
+              | otherwise    = Nothing
 
 -- slurp in a String of measurements of PU z-positions into MCtruth
 hSlurpMCtruth :: String -> Maybe MCtruth
