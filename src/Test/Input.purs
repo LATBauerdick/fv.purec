@@ -1,24 +1,17 @@
 module Test.Input ( hSlurp, hSlurpMCtruth ) where
 
-import Prelude
-import Prelude.Extended
+import Prelude.Extended (bind, discard, pure, words, ($), (*), (+), (-), (/), (==))
 
 import Control.MonadZero ( guard )
 import Data.Number ( fromString )
 import Data.Int ( fromString, round ) as Data.Int
 import Data.Array ( take, drop, (!!), fromFoldable, mapMaybe, range, slice )
 import Data.List ( head, index, slice, mapMaybe, drop ) as L
-import Data.Tuple ( Tuple (..), fst )
 import Data.Maybe ( Maybe (Nothing, Just) )
-import Effect ( Effect )
-import Control.Plus ( empty )
 
 import Math ( sin, cos )
 
--- import Unsafe.Coerce (unsafeCoerce)
-import Partial.Unsafe (unsafePartial)
-
-import Data.Cov
+import Data.Cov (Cov5, Jac(..), Jac55, Vec5, fromArray, (.*.))
 import FV.Types ( MCtruth (..), VHMeas (..), XMeas (..), HMeas (..) )
 
 
@@ -51,7 +44,7 @@ hSlurp ds = vhm where
   npu :: Maybe Int
   npu = do
               key <- L.head ws
-              {--LATB FIX THIS guard $ key == "PU_zpositions:" --}
+              guard $ key == "PU_zpositions:"
               snpu <- L.index ws 1
               Data.Int.fromString snpu
   vhm = case npu  of
