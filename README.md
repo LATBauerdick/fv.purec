@@ -2,7 +2,7 @@
 
 purescript initial implementation of FV vertex fitting -- experimental
 
-test program to evaluate performance using the `pure-c` C compiler backend for
+test program to evaluate performance using the [`pure-c`](https://github.com/pure-c/purec) C compiler backend for
 purescript
 
 ## Installation
