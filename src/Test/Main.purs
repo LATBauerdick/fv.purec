@@ -1,6 +1,6 @@
 module Test.Main where
 
-import Prelude.Extended ( iflt, to1fix, to5fix, words, uJust, debug, fromIntegral, normals, boxMuller, undefined, fromList, Unit, ($), (<>), (<<<), (*), (-), (+), (==), (/=), (>>=), show, discard, map, bind, mempty, pure, unit, negate, one )
+import Prelude.Extended (Unit, bind, discard, iflt, map, mempty, pure, show, to1fix, uJust, unit, ($), (*), (<<<), (<>))
 
 import Effect ( Effect, forE )
 import Effect.Console ( log, logShow )
@@ -25,7 +25,6 @@ import Data.Foldable (sum, traverse_)
 import Data.Cov (testCov2, Cov(..), Jac(..), Dim3, Vec3, Jac33, Cov3, fromArray, (*.), inv)
 import Data.String ( replace, contains, Pattern(..), Replacement(..) ) as S
 import Data.String.CodeUnits ( countPrefix, singleton, drop, dropWhile, fromCharArray, toCharArray, take, takeWhile ) as CU
-import Text.Format ( format, precision, width )
 
 import FV.Types
   ( VHMeas, HMeas, QMeas
@@ -37,225 +36,23 @@ import FV.Fit ( fit )
 
 import Test.Input ( hSlurp, hSlurpMCtruth )
 import Test.Random ( testRandom )
-{-- import Test.Cluster ( doCluster ) --}
-
-
-
-{-- readData :: String -> Effect String --}
-{-- readData = readTextFile UTF8 --}
 
 main :: Effect Unit
 main = do
-  log $ show $ CU.toCharArray $ "Ʈest" <> "ℌ"
-  log $ show $ CU.fromCharArray $ ['t', 'e', 's', 't'] -- CU.toCharArray "test test"
-  log $ show $ CU.fromCharArray $ CU.toCharArray "test test"
-  log $ show $ CU.fromCharArray $ ['x', 'y', 'z']
-  log $ show $ CU.singleton '>' <> CU.singleton '♜' <> CU.singleton '<'
-  log $ show $ S.replace (S.Pattern "<=") (S.Replacement "≤") "a <= b <= c"
-  log $ show $ S.replace (S.Pattern "≤") (S.Replacement "|   <=    |") "a♜ ≤ b <= c"
-  log $ show $ CU.drop 0 "a♜ ≤ b <= c"
-  log $ show $ CU.drop 1 "a♜ ≤ b <= c"
-  log $ show $ CU.drop 2 "a♜ ≤ b <= c"
-  log $ show $ CU.drop 3 "a♜ ≤ b <= c"
-  log $ "CU.countPrefix"
-  log $ show $ CU.countPrefix (_ /= 'c') "aaaxxxcccxxx"
-  log $ "CU.dropWhile"
-  log $ show $ CU.dropWhile (_ /= 'c') "a♜ <= b ≤ c"
-  log $ show $ CU.dropWhile (_ /= 'b') "a♜ <= b ≤ c"
-  log $ show $ CU.dropWhile (_ /= 'a') "a♜ <= b ≤ c"
-  log $ show $ CU.take 1 "a♜ ≤ b <= c"
-  log $ show $ CU.take 100 "a♜ ≤ b <= c"
-  log $ show $ CU.take (-100) "a♜ ≤ b <= c"
-  log $ show $ CU.takeWhile (_ /= 'b') "a♜ <= b ≤ c"
-  log $ show $ CU.takeWhile (_ /= 'z') "a♜ <= b ≤ c"
-  let ds :: String
-      ds = """
-   text 1234
-   3.355679512023926       3.489715576171875       7.110095977783203    
-  4.5451703E-03
-"""
-  logShow $ words ds
---  let cc :: Int
---      cc =  fromEnum 'x'
---  log $ "fromEnum Char does NOT work: " <> show cc
-  logShow $ fromString "12.3456"
-  logShow $ fromString "12"
-  {-- logShow $ readInt 10 "12" --}
-  {-- logShow $ readInt 10 "    12.1234" --}
-  {-- logShow $ readInt 0 "0x12" --}
-  {-- logShow $ readInt 0 "012" --}
-  {-- logShow $ readInt 16 "12" --}
-  {-- logShow $ readInt 17 "12" --}
-  log $ show $ format (width 8 <> precision 3) 12.34567
-  log $ show $ format (width 8 <> precision 3) (-0.815)
-  log $ show $ format (width 18 <> precision 8) 12.34567
-  log $ show $ format (width 18 <> precision 8) (-0.815)
-  logShow $ undefined == 1
-  log $ show (-0.815)
-  log $ show (-0.072)
-  log $ show $ format (width 8 <> precision 3) (-0.815999999999999999999999999)
-  log $ show 12.3456789123456789
-  log $ show 12.3456789e-3
-  log $ show $ to5fix 12.3456789e-3
-  log $ show 12.3456789e-6
-  log $ show $ to5fix 12.3456789e-6
-  log $ show 12.3456789e-9
-  log $ show $ to5fix 12.3456789e-9
-  log $ show 12.3456789e3
-  log $ show 12.3456789e6
-  log $ show 12.3456789e9
-  log $ show 12.3456789e12
-  log $ show 12.3456789e15
-  log $ show 12.3456789e18
-  log $ show 12.3456789e21
-  log $ show 3e-03
-  log $ show 3e-04
-  log $ show 3e-05
-  log $ show 31e-07
-  log $ show 3e-09
-  log $ show $ S.contains (S.Pattern "e") (show 3e-5)
-  log $ show $ fromFoldable (Just 1)
-  log $ show $ fromFoldable [1,2,3,4,5]
-  log $ show $ fromFoldable [Just 1, Just 2, Just 3, Nothing, Just 5]
-  let lll :: L.List Int
-      lll = L.range 1 5
-  log $ show $ lll
-  log $ show $ fromFoldable lll
-  log $ show $ fromFoldable (Just lll)
-  log $ show $ replicate 2 "Hi"
-  log $ show $ zipWith (*) [1, 2, 3] [4, 5, 6, 7]
-  let
-      xc3 :: Cov Dim3
-      xc3 = Cov {v: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]}
-      v3 :: Vec3
-      v3 = fromArray [10.0,11.0,12.0]
-  log $ show xc3 `debug` show v3
-  log $ show v3
-  log $ "Vec *. Vec = " <> show (v3 *. v3)
-  let c3a = (fromArray[1.0,2.0,3.0,4.0,5.0,6.0])::Cov3
-      c3b = (fromArray [0.0,0.0,1.0,1.0,0.0,0.0])::Cov3
-  log $ "Cov *. Cov = " <> show (c3a *. c3b)
-  let j3 :: Jac33
-      j3 = c3a *. c3b
-      c3c = inv (one::Cov3)
-  log $ "Jac = Cov * Cov = " <> show j3
-  log $ "inv Cov = " <> show c3c
-  let j33 = Jac {v: [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0], nr: 3} :: Jac33
-  log $ "Jac = Cov * Cov = " <> show j33
-  let j = j3 *. c3c
-  log $ "Jac * Cov = " <> show j
-  logShow $ (fromArray [1.0,2.0,3.0,4.0,5.0,6.0])::Cov3 -- cov matrix --}
-  let arr :: Array Int
-      arr = do
-          let n=5
-          i0 <- range 0 (n-1)
-          j0 <- range i0 (n-1)
-          pure $ 10*i0+j0
-  logShow $ arr
-  let ll  :: L.List Int
-      ll  = do
-          let n=5
-          i0 <- L.range 0 (n-1)
-          j0 <- L.range i0 (n-1)
-          pure $ 10*i0+j0
-  logShow $ ll
-  logShow $ fromFoldable ll
-  logShow $ fromList ll
-  logShow $ floor <<< M.sqrt <<< fromIntegral $ 9
-  logShow $ floor 9.9
-  let x = 9.0
-  logShow $ x
-  logShow $ infinity
-  logShow $ x == infinity
-  logShow $ M.floor 9.9
-  logShow $ M.sqrt 9.0
-  {-- ST.run (ST.for 0 5 (\i0 -> do (log $ "for " <> show i0))) --}
-  let
-      run :: forall a. (forall r. ST r (STArray r a)) -> Array a
-      run act = ST.run (act >>= STA.unsafeFreeze)
-  let l= run (do
-        arr <- STA.thaw (replicate (5) 99.0)
-        ST.for 0 5 \i -> do
-          _ <- STA.poke (i) (toNumber i) arr
-          mai <- STA.peek i arr
-          let works = mai == (Just (toNumber i)) `debug` ("xxxxxxxxxx" <> show mai)
-          pure unit
-        pure arr)
-  log $ show l
-  let sarr :: Array String
-      sarr =   ["t1","t2","t3","t4"]
-  let rec = { field1: "field 1", field2: sarr }
-  log $ "record " <> show rec
-  let arr :: Array Int
-      arr = []
-  log $ show $ uncons arr
-  log $ show $ uncons arr
-  log $ show $ uncons [99]
-  log $ show $ uncons [0,1,2,3,4]
-  log $ show $ drop 0 [0,1,2,3,4]
-  log $ show $ drop 2 [0,1,2,3,4]
-  log $ show $ drop 20 [0,1,2,3,4]
-  let sentence = ["Hello", "World", "!"]
-  logShow $ index sentence 0
-  logShow $ index sentence 7
-  logShow $ index arr 0
-  log $ show $ concat [[1, 2, 3], [], [4, 5, 6]]
-  {-- let ers = do --}
-  {--       rs <- (replicateA 5 (log "mmm")) --}
-  {--       pure unit --}
-  let ers :: Int -> Effect (Array Number)
-      ers n = do
-        ls0 <- boxMuller
-        ls1 <- boxMuller
-        ls2 <- boxMuller
-        ls3 <- boxMuller
-        ls4 <- boxMuller
-        {-- lss <- replicateA ((n+1)/2) boxMuller --}
-        lss <- replicateA 5 boxMuller
-        let lls = take n $ concat [ls0, ls1, ls2, ls3, ls4]
-        let ls = take n $ concat lss
-        let xx = 12 `debug` (show lls <> "  randoms")
-        let x0 = 12 `debug` (show ls <> "  randoms")
-        pure ls
-      rs :: Int -> Effect Unit
-      rs n = do
-         ls <- ers n
-         let x0 = 12 `debug` (show ls)
-         pure unit
-  uuu <- forE 1 6 (\i -> rs i)
-  rr1 <- normals 5
-  log $ "xxxxxxxxxxxxx"
   log "FVT Test Suite"
   log "--Test Cov"
   log $ testCov2
   log "--Test hSlurp"
   log "Test hSlurp dat/tr05129e001412.dat"
-  {-- testHSlurp =<< readData "dat/tr05129e001412.dat" --}
   logShow $ hSlurp tr05129e001412
   logShow $ hSlurp tav4
   logShow $ hSlurpMCtruth tav4
   log "--Test FVT 1"
-  -- send the list of tau tracks and a VHMeas to testFVT
-  {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05129e001412.dat" --}
   testFVT [0,2,3,4,5] <<< uJust <<< hSlurp $ tr05129e001412
-  {-- log "--Test FVT 2" --}
-  {-- testFVT [0,1,2,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr05158e004656.dat" --}
-  {-- log "--Test FVT 3" --}
-  {-- testFVT [0,2,3,4,5] <<< uJust <<< hSlurp =<< readData "dat/tr07849e007984.dat" --}
-  log "--Test Cluster"
-  {-- ds <- readData "dat/tr05129e001412.dat" --}
-  --ds <- readData "dat/tav-0.dat"
-  {-- let ds = tr05129e001412 --}
-  {-- let vm = uJust $ hSlurp ds --}
-  {-- traverse_ showHelix $ helices vm --}
-  {-- traverse_ showMomentum $ helices vm --}
-  {-- doCluster vm --}
   log "--Test Random"
   testRandom 50 <<< hFilter [0,2,3,4,5] <<< vBlowup 10000.0
                  <<< uJust <<< hSlurp $ tr05129e001412
   pure unit
-
-{-- foreign import joinxxx :: String -> Array String -> String --}
 
 showMomentum :: HMeas -> Effect Unit
 showMomentum h = log $ "pt,pz,fi,E ->" <> (show <<< fromHMeas) h

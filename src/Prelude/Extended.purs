@@ -28,6 +28,7 @@ import Data.List ( List(..), (:), range, fromFoldable ) as L
 import Data.Array ( unsafeIndex, range, length, take, concat
   , fromFoldable, replicate
   ) as A
+import Data.Enum (fromEnum)
 import Data.Unfoldable ( replicate )
 import Data.Traversable ( sequence )
 import Data.Tuple ( Tuple(..), fst, snd )
@@ -49,10 +50,10 @@ fromList = A.fromFoldable
 fromIntegral :: Int -> Number
 fromIntegral = toNumber
 
-{-- trace :: forall a. String -> a -> a --}
-{-- trace s a = const a (unsafePerformEffect (log s)) --}
-trace s a = const a (unsafeLog s)
-foreign import unsafeLog :: String -> String
+trace :: forall a. String -> a -> a
+trace s a = const a (unsafePerformEffect (log s))
+{-- trace s a = const a (unsafeLog s) --}
+{-- foreign import unsafeLog :: String -> String --}
 
 debug :: forall a. a -> String -> a
 debug = flip trace
@@ -139,7 +140,10 @@ isSpace c = uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
         uc :: Int
         uc = toCharCode c
 
-foreign import toCharCode :: Char -> Int
+-- | Returns the numeric Unicode value of the character.
+{-- foreign import toCharCode :: Char -> Int --}
+toCharCode :: Char -> Int
+toCharCode = fromEnum
 
 words :: String -> List String
 {-- words = L.fromFoldable <<< Data.String.Utils.words --}
